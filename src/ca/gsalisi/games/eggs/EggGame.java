@@ -27,6 +27,7 @@ public class EggGame {
 	protected Timer eggDelayTimer;
 	protected Timer masterLvlTimer;
 	protected TimerTask eggTimerTask;
+	protected AnimationListener animListener;
 
 	protected ImageView eggViewLeft;
 	protected ImageView eggViewCenter;
@@ -43,6 +44,8 @@ public class EggGame {
 	protected int rightMargin;
 	protected int leftMargin;
 	protected int eggDelayTime;
+	private int rightBound = 280;
+	private int leftBound = -280;
 
 	public EggGame(MainActivity mainActivity) {
 		// constructor
@@ -50,9 +53,6 @@ public class EggGame {
 		sensorManager = main.sensorManager;
 		eventListener = main.eventListener;
 		rtnVectorSensor = main.rtnVectorSensor;
-		// eggViewLeft = main.eggViewLeft;
-		// eggViewCenter = main.eggViewCenter;
-		// eggViewRight = main.eggViewRight;
 		chickenViewLeft = main.chickenViewLeft;
 		chickenViewCenter = main.chickenViewCenter;
 		chickenViewRight = main.chickenViewRight;
@@ -77,8 +77,6 @@ public class EggGame {
 		level = 0;
 		eggDelayTime = 4000;
 
-		createEggFallTimer();
-
 		final Handler handler = new Handler();
 		TimerTask levelTimerTask = new TimerTask() {
 
@@ -88,13 +86,12 @@ public class EggGame {
 
 					@Override
 					public void run() {
-						if (level != 0) {
+						if (level != 0 && eggDelayTime >= 500) {
 							eggDelayTimer.cancel();
-							createEggFallTimer();
 							eggDelayTime -= 250;
 						}
-						eggDelayTimer
-								.schedule(eggTimerTask, 1000, eggDelayTime);
+						createEggFallTimer();
+						eggDelayTimer.schedule(eggTimerTask, 1000, eggDelayTime);
 						level += 1;
 					}
 				});
@@ -103,7 +100,7 @@ public class EggGame {
 
 		};
 		masterLvlTimer = new Timer();
-		masterLvlTimer.schedule(levelTimerTask, 200, 10000);
+		masterLvlTimer.schedule(levelTimerTask, 200, 15000);
 
 	}// end startGame
 
@@ -132,8 +129,8 @@ public class EggGame {
 
 	protected void pauseGame() {
 
-		eggDelayTimer.cancel();
 		masterLvlTimer.cancel();
+		eggDelayTimer.cancel();
 
 		sensorManager.unregisterListener(eventListener);
 
@@ -156,24 +153,8 @@ public class EggGame {
 				R.anim.eggdrop);
 
 		eggView.startAnimation(eggAnimation);
-		// switch(position){
-		// case 0:
-		// //main.eggViewLeft.setVisibility(View.VISIBLE);
-		// main.eggViewLeft.startAnimation(eggAnimation);
-		// break;
-		// case 1:
-		// //main.eggViewCenter.setVisibility(View.VISIBLE);
-		// main.eggViewCenter.startAnimation(eggAnimation);
-		// break;
-		// case 2:
-		// //main.eggViewRight.setVisibility(View.VISIBLE);
-		// main.eggViewRight.startAnimation(eggAnimation);
-		// break;
-		// default:
-		// break;
-		// }
-
-		eggAnimation.setAnimationListener(new AnimationListener() {
+		
+		animListener = new AnimationListener() {
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
@@ -181,19 +162,6 @@ public class EggGame {
 				String countStr = "Score: " + String.valueOf(main.scoreCount);
 				main.scoreView.setText(countStr);
 				eggView.setVisibility(View.GONE);
-				// switch(pos){
-				// case 0:
-				// main.eggViewLeft.setVisibility(View.GONE);
-				// break;
-				// case 1:
-				// main.eggViewCenter.setVisibility(View.GONE);
-				// break;
-				// case 2:
-				// main.eggViewRight.setVisibility(View.GONE);
-				// break;
-				// default:
-				// break;
-				// }
 
 			}
 
@@ -207,7 +175,8 @@ public class EggGame {
 
 			}
 
-		});
+		};
+		eggAnimation.setAnimationListener(animListener);
 
 	}// end startEggFall()
 
@@ -223,7 +192,7 @@ public class EggGame {
 		main.xView.setBackgroundColor(Color.WHITE);
 
 		if (direction.equals("right")) {
-			if (xBasketPosition <= 280) {
+			if (xBasketPosition <= rightBound) {
 				if (xBasketPosition == 0 || xBasketPosition > 0) {
 					rightMargin = main.convertToPixel(128) * (-1);
 					leftMargin += unitInc;
@@ -243,7 +212,7 @@ public class EggGame {
 			}
 		} else {
 
-			if (xBasketPosition >= -280) {
+			if (xBasketPosition >= leftBound) {
 
 				if (xBasketPosition == 0 || xBasketPosition > 0) {
 					leftMargin -= unitInc;
@@ -264,4 +233,8 @@ public class EggGame {
 
 	}// end of moveBasket()
 
+	public int getBasketPosition() {
+		return xBasketPosition;
+	}
+	
 }

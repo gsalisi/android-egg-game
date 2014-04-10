@@ -9,9 +9,12 @@ public class MySensorEventListener implements SensorEventListener {
 
 	MainActivity main;
 	float smoothedValue;
+	double lowerBound;
+	double upperBound;
 	double previousValue;
-	double rtnFiltered;
+	double correctedSmoothedValue;
 	boolean first;
+	int basketPosition;
 
 	public MySensorEventListener(MainActivity mainActivity) {
 		main = mainActivity;
@@ -29,60 +32,79 @@ public class MySensorEventListener implements SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {
 
 		if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-
+			
+			basketPosition = main.getBasketPosition();
+			
 			if (first) {
-				smoothedValue = event.values[1];
+				initializeBounds(event);
 				first = false;
 			} else {
-
+				if(basketPosition == 0){
+					initializeBounds(event);
+				}
 				// correct value
-				float valueCorrected = event.values[1];
-
-				rtnFiltered = lowPassFilter(valueCorrected, 10) * 100;
+				float value = event.values[1];
+				filter(value, 10);
+				correctedSmoothedValue = smoothedValue * 100 ;
 
 				// check if this value is incremented or decremented by a
 				// certain value
 				// move basket accordingly
 
-				if (rtnFiltered > previousValue + .7) {
+				if (correctedSmoothedValue > previousValue + .7) {
 					main.moveBasket("right", 30);
-					previousValue = rtnFiltered;
-				} else if (rtnFiltered > previousValue + .5) {
+//					previousValue = correctedSmoothedValue;
+				} else if (correctedSmoothedValue > previousValue + .5) {
 					main.moveBasket("right", 25);
-					previousValue = rtnFiltered;
-				} else if (rtnFiltered > previousValue + .2) {
+//					previousValue = correctedSmoothedValue;
+				} else if (correctedSmoothedValue > previousValue + .2) {
 					main.moveBasket("right", 15);
-					previousValue = rtnFiltered;
-				} else if (rtnFiltered > previousValue + .08) {
-					main.moveBasket("right", 10);
-					previousValue = rtnFiltered;
+//					previousValue = correctedSmoothedValue;
+				} else if (correctedSmoothedValue > previousValue + .08) {
+					main.moveBasket("right", 8);
+//					previousValue = correctedSmoothedValue;
 				}
 
-				if (rtnFiltered > previousValue + .7) {
+				if (correctedSmoothedValue < previousValue - .7) {
 					main.moveBasket("left", 30);
-					previousValue = rtnFiltered;
-				} else if (rtnFiltered < previousValue - .5) {
+//					previousValue = correctedSmoothedValue;
+				} else if (correctedSmoothedValue < previousValue - .5) {
 					main.moveBasket("left", 25);
-					previousValue = rtnFiltered;
-				} else if (rtnFiltered < previousValue - .2) {
+//					previousValue = correctedSmoothedValue;
+				} else if (correctedSmoothedValue < previousValue - .2) {
 					main.moveBasket("left", 15);
-					previousValue = rtnFiltered;
-				} else if (rtnFiltered < previousValue - .08) {
-					main.moveBasket("left", 10);
-					previousValue = rtnFiltered;
+//					previousValue = correctedSmoothedValue;
+				} else if (correctedSmoothedValue < previousValue - .08) {
+					main.moveBasket("left", 8);
+//					previousValue = correctedSmoothedValue;
+				}
+				
+				if(correctedSmoothedValue < previousValue - .08 || 
+						correctedSmoothedValue > previousValue + .08){
+					previousValue = correctedSmoothedValue;
 				}
 
 			}
-
-			main.yView.setText(String.valueOf(previousValue));
+			main.zView.setText(String.valueOf(smoothedValue));
 
 		}
 	}
 
-	protected double lowPassFilter(float value, float smoothing) {
+	private void initializeBounds(SensorEvent event) {
+		smoothedValue = event.values[1];
+		upperBound = smoothedValue + 0.10;
+		lowerBound = smoothedValue - 0.10;
+		main.yView.setText(String.valueOf(smoothedValue));
+	}
 
-		smoothedValue += (value - smoothedValue) / smoothing;
-
-		return smoothedValue;
+	protected void filter(float value, float smoothing) {
+		//if( (value - smoothedValue < upperBound && smoothedValue - value  ))
+		double testValue = (value - smoothedValue) / smoothing; 
+		boolean pass1 = !( testValue > 0 && basketPosition >= 280);
+		boolean pass2 = !( testValue < 0 && basketPosition <= -280);
+		
+		if(pass1 && pass2){
+			smoothedValue += (value - smoothedValue) / smoothing;
+		}
 	}
 }

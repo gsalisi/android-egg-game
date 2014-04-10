@@ -85,6 +85,11 @@ public class MainActivity extends Activity {
 
 	}// end OnCreate
 
+	protected void OnPause() {
+
+		eggGame.pauseGame();
+
+	}
 	protected void OnStop() {
 
 		eggGame.pauseGame();
@@ -111,63 +116,12 @@ public class MainActivity extends Activity {
 		chickenViewCenter = (ImageView) findViewById(R.id.chickenCenter);
 		chickenViewRight = (ImageView) findViewById(R.id.chickenRight);
 
-		// ---- INITIALIZE EGGS ----//
+		//---- REMOVED INITIALIZE EGGS ----//
+	
 
-		// RelativeLayout.LayoutParams layoutParams = new
-		// RelativeLayout.LayoutParams(
-		// ViewGroup.LayoutParams.WRAP_CONTENT,
-		// ViewGroup.LayoutParams.WRAP_CONTENT);
-		// layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		// layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
-		// RelativeLayout.TRUE);
-		// layoutParams.setMargins( 0, 50, 0, 0 );
-		// layoutParams.height = convertToPixel(48);
-		//
-		// eggViewCenter = new ImageView(this);
-		// eggViewCenter.setImageResource(R.drawable.egg_test);
-		// eggViewCenter.setLayoutParams(layoutParams);
-		//
-		// RelativeLayout.LayoutParams layoutParams1 = new
-		// RelativeLayout.LayoutParams(
-		// ViewGroup.LayoutParams.WRAP_CONTENT,
-		// ViewGroup.LayoutParams.WRAP_CONTENT);
-		// layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-		// layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		// layoutParams1.setMargins( 50, 50, 0, 0 );
-		// layoutParams1.height = convertToPixel(48);
-		//
-		// eggViewLeft = new ImageView(this);
-		// eggViewLeft.setImageResource(R.drawable.egg_test);
-		// eggViewLeft.setLayoutParams(layoutParams1);
-		//
-		// RelativeLayout.LayoutParams layoutParams2 = new
-		// RelativeLayout.LayoutParams(
-		// ViewGroup.LayoutParams.WRAP_CONTENT,
-		// ViewGroup.LayoutParams.WRAP_CONTENT);
-		// layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		// layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		// layoutParams2.setMargins( 0, 50, 50, 0);
-		// layoutParams2.height = convertToPixel(48);
-		//
-		// eggViewRight = new ImageView(this);
-		// eggViewRight.setImageResource(R.drawable.egg_test);
-		// eggViewRight.setLayoutParams(layoutParams2);
-		//
-		// rLayout.addView(eggViewCenter);
-		// rLayout.addView(eggViewLeft);
-		// rLayout.addView(eggViewRight);
-		//
-		// eggViewLeft.setVisibility(View.INVISIBLE);
-		// eggViewRight.setVisibility(View.INVISIBLE);
-		// eggViewCenter.setVisibility(View.INVISIBLE);
+		// ----  create basket view ------//
 
-		// end eggs init
-
-		// ----------------- create basket view ------------------
-
-		// xBasketPosition = 0;
-		// rightMargin = -260; //how much margin it needs from center to left
-		// leftMargin = -260; //how much margin it needs from center to right
+		//removed position
 
 		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -194,16 +148,6 @@ public class MainActivity extends Activity {
 		zView = (TextView) findViewById(R.id.textView4);
 
 	}// end initializeGraphics()
-
-	public int convertToPixel(int dp) {
-		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-				getResources().getDisplayMetrics());
-	}
-
-	public void moveBasket(String string, int i) {
-		eggGame.moveBasket(string, i);
-
-	}
 
 	public ImageView createEgg(int pos) {
 
@@ -243,6 +187,21 @@ public class MainActivity extends Activity {
 		rLayout.addView(eggView);
 
 		return eggView;
+	}
+	
+	public int convertToPixel(int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+				getResources().getDisplayMetrics());
+	}
+
+	public void moveBasket(String string, int i) {
+		eggGame.moveBasket(string, i);
+
+	}
+
+	public int getBasketPosition() {
+			
+		return eggGame.getBasketPosition();
 	}
 
 }
