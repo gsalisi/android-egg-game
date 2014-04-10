@@ -44,8 +44,8 @@ public class EggGame {
 	protected int rightMargin;
 	protected int leftMargin;
 	protected int eggDelayTime;
-	private int rightBound = 280;
-	private int leftBound = -280;
+	private int rightBound = 186;
+	private int leftBound = -186;
 
 	public EggGame(MainActivity mainActivity) {
 		// constructor
@@ -182,7 +182,7 @@ public class EggGame {
 
 	public void moveBasket(String direction, int incrementValue) {
 
-		final int unitInc = incrementValue;
+		final int unitInc = main.convertToPixel(incrementValue);
 		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -192,7 +192,7 @@ public class EggGame {
 		main.xView.setBackgroundColor(Color.WHITE);
 
 		if (direction.equals("right")) {
-			if (xBasketPosition <= rightBound) {
+			if (xBasketPosition <= main.convertToPixel(rightBound)) {
 				if (xBasketPosition == 0 || xBasketPosition > 0) {
 					rightMargin = main.convertToPixel(128) * (-1);
 					leftMargin += unitInc;
@@ -212,7 +212,7 @@ public class EggGame {
 			}
 		} else {
 
-			if (xBasketPosition >= leftBound) {
+			if (xBasketPosition >= main.convertToPixel(leftBound)) {
 
 				if (xBasketPosition == 0 || xBasketPosition > 0) {
 					leftMargin -= unitInc;
