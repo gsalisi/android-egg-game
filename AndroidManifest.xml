@@ -10,13 +10,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/chicken"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Light.NoTitleBar" 
         >
         <activity
             android:name="ca.gsalisi.games.eggs.StartingActivity"
-            android:label="@string/title_activity_starting" 
+            android:label="@string/app_name" 
             android:screenOrientation = "portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -8,7 +8,9 @@ import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -29,14 +31,10 @@ public class EggGame {
 	protected TimerTask eggTimerTask;
 	protected AnimationListener animListener;
 
-	protected ImageView eggViewLeft;
-	protected ImageView eggViewCenter;
-	protected ImageView eggViewRight;
-	protected ImageView chickenViewLeft;
-	protected ImageView chickenViewCenter;
-	protected ImageView chickenViewRight;
-	protected ImageView basketView;
 
+	protected ImageView basketView;
+	
+	protected Animation eggAnimation;
 	protected TextView scoreView;
 	protected int level;
 	protected int scoreCount;
@@ -44,8 +42,11 @@ public class EggGame {
 	protected int rightMargin;
 	protected int leftMargin;
 	protected int eggDelayTime;
-	private int rightBound = 186;
-	private int leftBound = -186;
+	private int rightBound = 118;
+	private int leftBound = -118;
+	protected int numberOfLives;
+	private boolean running;
+	
 
 	public EggGame(MainActivity mainActivity) {
 		// constructor
@@ -53,25 +54,54 @@ public class EggGame {
 		sensorManager = main.sensorManager;
 		eventListener = main.eventListener;
 		rtnVectorSensor = main.rtnVectorSensor;
-		chickenViewLeft = main.chickenViewLeft;
-		chickenViewCenter = main.chickenViewCenter;
-		chickenViewRight = main.chickenViewRight;
 		basketView = main.basketView;
 		scoreView = main.scoreView;
 		scoreCount = 0;
-		rightMargin = main.convertToPixel(128) * (-1); // how much margin it
-														// needs from center to
-														// left
-		leftMargin = main.convertToPixel(128) * (-1); // how much margin it
-														// needs from center to
-														// right
+		rightMargin = main.convertToPixel(60) * (-1);
+		leftMargin = main.convertToPixel(60) * (-1); 
 		xBasketPosition = 0;
+		numberOfLives = 3;
 
 	}
 
 	protected void startGame() {
 		// creates a delay for every egg drop
+		main.countdownView.setVisibility(View.VISIBLE);
+		main.reset_btn.setEnabled(false);
+		main.countdownView.bringToFront();
+		
+		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
+		new CountDownTimer( 4000, 1000 ){
 
+			@Override
+			public void onFinish() {
+				//main.countdownView.setText("0");
+				main.countdownView.setVisibility(View.GONE);
+				initiateGameTimers();
+				
+			}
+
+			@Override
+			public void onTick(long num) {
+				num /= 1000;
+				int timeLeft = (int) num;
+
+				main.countdownView.setText(String.valueOf(timeLeft));
+				main.countdownView.startAnimation(fadeOut);
+				
+			}
+			
+		}.start();
+		
+		
+
+	}// end startGame
+	
+
+	private void initiateGameTimers() {
+		// TODO Auto-generated method stub
+		running = true; 
+		
 		sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
@@ -86,13 +116,15 @@ public class EggGame {
 
 					@Override
 					public void run() {
-						if (level != 0 && eggDelayTime >= 500) {
-							eggDelayTimer.cancel();
-							eggDelayTime -= 250;
+						if(running){
+							if (level != 0 && eggDelayTime >= 500) {
+								eggDelayTimer.cancel();
+								eggDelayTime -= 250;
+							}
+							createEggFallTimer();
+							eggDelayTimer.schedule(eggTimerTask, 400, eggDelayTime);
+							level += 1;
 						}
-						createEggFallTimer();
-						eggDelayTimer.schedule(eggTimerTask, 1000, eggDelayTime);
-						level += 1;
 					}
 				});
 
@@ -101,8 +133,9 @@ public class EggGame {
 		};
 		masterLvlTimer = new Timer();
 		masterLvlTimer.schedule(levelTimerTask, 200, 15000);
-
-	}// end startGame
+		
+		main.reset_btn.setEnabled(true);
+	}
 
 	protected void createEggFallTimer() {
 
@@ -116,8 +149,10 @@ public class EggGame {
 
 					@Override
 					public void run() {
-						int position = generateRandomPosition();
-						startEggFall(position);
+						if(running){
+							int position = generateRandomPosition();
+							startEggFall(position);
+						}
 					}
 				});
 
@@ -127,14 +162,7 @@ public class EggGame {
 
 	}// end startEggFallTimer
 
-	protected void pauseGame() {
 
-		masterLvlTimer.cancel();
-		eggDelayTimer.cancel();
-
-		sensorManager.unregisterListener(eventListener);
-
-	}// end pauseGame
 
 	// Generates a random position for the egg fall
 	protected int generateRandomPosition() {
@@ -148,8 +176,8 @@ public class EggGame {
 		final int pos = position;
 
 		final ImageView eggView = main.createEgg(pos);
-
-		Animation eggAnimation = AnimationUtils.loadAnimation(main,
+		
+		eggAnimation = AnimationUtils.loadAnimation(main,
 				R.anim.eggdrop);
 
 		eggView.startAnimation(eggAnimation);
@@ -158,11 +186,10 @@ public class EggGame {
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				main.scoreCount += 1;
-				String countStr = "Score: " + String.valueOf(main.scoreCount);
-				main.scoreView.setText(countStr);
-				eggView.setVisibility(View.GONE);
-
+				if(running){
+					eggView.setVisibility(View.GONE);
+					checkIfScored(pos);
+				}
 			}
 
 			@Override
@@ -180,6 +207,50 @@ public class EggGame {
 
 	}// end startEggFall()
 
+	protected void checkIfScored(int position) {
+		
+		boolean caught = false;
+
+		switch (position) {
+		case 0:
+
+			if(xBasketPosition < main.convertToPixel(-90)){
+				caught = true;
+			}
+			
+			break;
+		case 1:
+			if(xBasketPosition < main.convertToPixel(30) 
+						&& xBasketPosition > main.convertToPixel(-30)){
+				caught = true;
+			}
+			break;
+		case 2:
+			if(xBasketPosition > main.convertToPixel(90)){
+				caught = true;
+			}
+			break;
+		default:
+			break;
+		}
+		
+		if(caught){
+			scoreCount += 1;
+			main.updateScore(scoreCount);
+			
+		}else{
+			main.showBrokenEgg(position);
+			numberOfLives--;
+			
+			if(numberOfLives <= 0){
+				main.gameOver();
+			}else{
+				main.updateLives(numberOfLives);
+			}
+		}
+		
+	}//end check if scored
+
 	public void moveBasket(String direction, int incrementValue) {
 
 		final int unitInc = main.convertToPixel(incrementValue);
@@ -187,24 +258,25 @@ public class EggGame {
 				ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
 		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		basketLayout.height = 120;
-		main.xView.setText(String.valueOf(xBasketPosition));
-		main.xView.setBackgroundColor(Color.WHITE);
+		basketLayout.width = main.convertToPixel(120);
+	
 
 		if (direction.equals("right")) {
 			if (xBasketPosition <= main.convertToPixel(rightBound)) {
 				if (xBasketPosition == 0 || xBasketPosition > 0) {
-					rightMargin = main.convertToPixel(128) * (-1);
+					// 128dp is set to compensate on how big the nest is 
+					// see layout parameter rule!
+					rightMargin = main.convertToPixel(-60);
 					leftMargin += unitInc;
 					basketLayout.addRule(RelativeLayout.RIGHT_OF,
-							R.id.chickenCenter);
-					basketLayout.setMargins(leftMargin, 0, 0, 20);
+							R.id.centerRef);
+					basketLayout.setMargins(leftMargin, 0, 0, 0);
 
 				} else {
 					rightMargin -= unitInc;
 					basketLayout.addRule(RelativeLayout.LEFT_OF,
-							R.id.chickenCenter);
-					basketLayout.setMargins(0, 0, rightMargin, 20);
+							R.id.centerRef);
+					basketLayout.setMargins(0, 0, rightMargin, 0);
 				}
 
 				xBasketPosition += unitInc;
@@ -217,14 +289,16 @@ public class EggGame {
 				if (xBasketPosition == 0 || xBasketPosition > 0) {
 					leftMargin -= unitInc;
 					basketLayout.addRule(RelativeLayout.RIGHT_OF,
-							R.id.chickenCenter);
-					basketLayout.setMargins(leftMargin, 0, 0, 20);
+							R.id.centerRef);
+					basketLayout.setMargins(leftMargin, 0, 0, 0);
 				} else {
-					leftMargin = main.convertToPixel(128) * (-1);
+					// 128dp is set to compensate on how big the chicken center is 
+					// see layout parameter rule!
+					leftMargin = main.convertToPixel(-60);
 					rightMargin += unitInc;
 					basketLayout.addRule(RelativeLayout.LEFT_OF,
-							R.id.chickenCenter);
-					basketLayout.setMargins(0, 0, rightMargin, 20);
+							R.id.centerRef);
+					basketLayout.setMargins(0, 0, rightMargin, 0);
 				}
 				xBasketPosition -= unitInc;
 				basketView.setLayoutParams(basketLayout);
@@ -235,6 +309,32 @@ public class EggGame {
 
 	public int getBasketPosition() {
 		return xBasketPosition;
+	}
+
+	public void resetGame() {
+		
+		numberOfLives = 3;
+		main.updateLives(numberOfLives);
+		scoreCount = 0;
+		main.updateScore(scoreCount);
+		
+		startGame();
+	}
+
+	public void stopGame() {
+		
+		running = false;
+		
+		masterLvlTimer.cancel();
+		eggDelayTimer.cancel();
+		
+		masterLvlTimer.purge();
+		eggDelayTimer.purge();
+		
+		eggAnimation.cancel();
+		main.eggView.clearAnimation();
+		
+		sensorManager.unregisterListener(eventListener);
 	}
 	
 }
