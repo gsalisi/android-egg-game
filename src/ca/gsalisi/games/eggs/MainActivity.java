@@ -1,14 +1,11 @@
 package ca.gsalisi.games.eggs;
 
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.os.Bundle;
-import android.os.Handler;
 import android.app.Activity;
 import android.app.Dialog;
-import android.graphics.Color;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -19,53 +16,48 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class MainActivity extends Activity {
 
 	private EggGame eggGame;
+	private TextView livesView;
+	private TextView bestScoreView;
+	private int bestScore;
+	private SharedPreferences pref;
+	
 	protected RelativeLayout rLayout;
 	protected ImageView eggView;
-	
 	protected ImageView chickenViewLeft;
 	protected ImageView chickenViewCenter;
 	protected ImageView chickenViewRight;
 	protected ImageView basketView;
-	
 	protected ImageView eggBrokenLeft;
 	protected ImageView eggBrokenCenter;
 	protected ImageView eggBrokenRight;
-	
-	public ImageButton reset_btn;
-
-	protected boolean isPlaying;
 	protected SensorManager sensorManager;
 	protected SensorEventListener eventListener;
 	protected Sensor rtnVectorSensor;
 	protected TextView scoreView;
-	private int bestScore;
-	
-	protected TextView livesView;
 	protected TextView countdownView;
+	
+	public ImageButton reset_btn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		rLayout = (RelativeLayout) findViewById(R.id.rLayout);
-		isPlaying = true;// checks if the game is in session or not
-		scoreView = (TextView) findViewById(R.id.score_view);
-		reset_btn = (ImageButton) findViewById(R.id.btn_reset);
-
 		initializeGameGraphics(); // initialize graphics for main view
 		initSensors(); // initialize sensors
+		
+		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
+		bestScore = pref.getInt("best", 0);
+		updateBest();
+
 		eggGame = new EggGame(MainActivity.this);
 		eggGame.startGame();
 
@@ -79,20 +71,29 @@ public class MainActivity extends Activity {
 		});
 
 	}// end OnCreate
+	
+//	@Override
+//	public void onBackPressed() {
+//		if()
+//	}
 
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if(eggGame.running){
+			eggGame.stopGame();
+		}
 		Log.d("GS", "On Destroy");
 
 	}
 
 	@Override
 	protected void onPause() {
-		
-		eggGame.stopGame();
 		super.onPause();
-		
+		if(eggGame.running){
+			eggGame.stopGame();
+		}
 		Log.d("GS", "On PAUSE");
 		
 	}
@@ -100,6 +101,9 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
+		if(eggGame.running){
+			eggGame.stopGame();
+		}
 		Log.d("GS", "On Stop");
 		
 	}
@@ -121,6 +125,7 @@ public class MainActivity extends Activity {
 	// create views
 	protected void initializeGameGraphics() {
 
+		rLayout = (RelativeLayout) findViewById(R.id.rLayout);
 		// ---- INITIALIZE CHICKENS --- //
 
 		chickenViewLeft = (ImageView) findViewById(R.id.chickenLeft);
@@ -198,6 +203,9 @@ public class MainActivity extends Activity {
 
 		livesView = (TextView) findViewById(R.id.lives_view);
 		countdownView = (TextView) findViewById(R.id.countdown_view);
+		scoreView = (TextView) findViewById(R.id.score_view);
+		reset_btn = (ImageButton) findViewById(R.id.btn_reset);
+		bestScoreView = (TextView) findViewById(R.id.best_view);
 	
 	}// end initializeGraphics()
 
@@ -271,9 +279,17 @@ public class MainActivity extends Activity {
 		}
 		
 	}
-	
+	//show game over dialog
 	public void gameOver() {
 		
+		if(eggGame.scoreCount > bestScore){
+			bestScore = eggGame.scoreCount;
+			pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
+			Editor editor = pref.edit();
+			editor.putInt("best", bestScore);
+			editor.commit();
+			updateBest();
+		}
 		eggGame.stopGame();
 		bringChickensToFront();
 		
@@ -295,7 +311,7 @@ public class MainActivity extends Activity {
 		
 	}
 	
-	
+	//moves the basket in eggGame class
 	public void moveBasket(String string, int i) {
 		eggGame.moveBasket(string, i);
 	}
@@ -308,6 +324,12 @@ public class MainActivity extends Activity {
 		livesView.setText(String.valueOf(numberOfLives));
 		
 	}
+	//updates best score view
+	private void updateBest() {
+		bestScoreView.setText("Best: " + bestScore);
+		
+	}
+
 	// updates score text view
 	public void updateScore(int score) {
 		String countStr = "Score: " + String.valueOf(score);

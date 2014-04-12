@@ -45,7 +45,8 @@ public class EggGame {
 	private int rightBound = 118;
 	private int leftBound = -118;
 	protected int numberOfLives;
-	private boolean running;
+	
+	public boolean running;
 	
 
 	public EggGame(MainActivity mainActivity) {
@@ -126,7 +127,7 @@ public class EggGame {
 
 		};
 		masterLvlTimer = new Timer();
-		masterLvlTimer.schedule(levelTimerTask, 200, 15000);
+		masterLvlTimer.schedule(levelTimerTask, 0, 15000);
 		
 		//set things that prevent crash 
 		//when game is stopped while counting down
@@ -314,7 +315,7 @@ public class EggGame {
 		main.updateLives(numberOfLives);
 		scoreCount = 0;
 		main.updateScore(scoreCount);
-		
+
 		startGame();
 	}
 
