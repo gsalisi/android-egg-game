@@ -101,7 +101,7 @@ public class EggGame {
 		sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
-		eggDelayTime = 4000;
+		eggDelayTime = 3500;
 
 		final Handler handler = new Handler();
 		TimerTask levelTimerTask = new TimerTask() {
@@ -116,7 +116,7 @@ public class EggGame {
 							if (level != 0 && eggDelayTime >= 500) {
 								eggDelayTimer.cancel();
 								eggDelayTimer.purge();
-								eggDelayTime -= 250;
+								eggDelayTime -= 100;
 								Log.d("LevelTimerTask", "Cancelled existing eggtask!");
 							}
 							createEggFallTimer();
@@ -131,7 +131,7 @@ public class EggGame {
 
 		};
 		masterLvlTimer = new Timer();
-		masterLvlTimer.schedule(levelTimerTask, 0, 15000);
+		masterLvlTimer.schedule(levelTimerTask, 0, 10000);
 		
 		//set things that prevent crash 
 		//when game is stopped while counting down
