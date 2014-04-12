@@ -22,32 +22,31 @@ import android.widget.TextView;
 
 public class EggGame {
 
-	MainActivity main;
-	protected SensorManager sensorManager;
-	protected SensorEventListener eventListener;
-	protected Sensor rtnVectorSensor;
-	protected Timer eggDelayTimer;
-	protected Timer masterLvlTimer;
-	protected TimerTask eggTimerTask;
-	protected AnimationListener animListener;
-
-
-	protected ImageView basketView;
+	private MainActivity main;
+	private SensorManager sensorManager;
+	private SensorEventListener eventListener;
+	private Sensor rtnVectorSensor;
+	private Timer eggDelayTimer;
+	private Timer masterLvlTimer;
+	private TimerTask eggTimerTask;
+	private AnimationListener animListener;
+	private Animation eggAnimation;
+	private ImageView basketView;
 	
-	protected Animation eggAnimation;
-	protected TextView scoreView;
+	private int rightMargin;
+	private int leftMargin;
+	private int eggDelayTime;
+	private int rightBound = 118;
+	private int leftBound = -118;
+	
+	public boolean timerRunning;
 	protected int level;
 	protected int scoreCount;
 	protected int xBasketPosition;
-	protected int rightMargin;
-	protected int leftMargin;
-	protected int eggDelayTime;
-	private int rightBound = 118;
-	private int leftBound = -118;
 	protected int numberOfLives;
-	
-	public boolean running;
-	
+	protected CountDownTimer countdownTimer;
+	public boolean startedGame;
+	private boolean animationStarted;
 
 	public EggGame(MainActivity mainActivity) {
 		// constructor
@@ -56,7 +55,6 @@ public class EggGame {
 		eventListener = main.eventListener;
 		rtnVectorSensor = main.rtnVectorSensor;
 		basketView = main.basketView;
-		scoreView = main.scoreView;
 		scoreCount = 0;
 		rightMargin = main.convertToPixel(60) * (-1);
 		leftMargin = main.convertToPixel(60) * (-1); 
@@ -66,18 +64,23 @@ public class EggGame {
 	}
 
 	protected void startGame() {
+		
+		startedGame = true;
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
 		main.countdownView.bringToFront();
 		//initialize the animation for flashing count down
 		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
-		new CountDownTimer( 4000, 1000 ){
+		
+		countdownTimer = new CountDownTimer( 4000, 1000 ){
 
 			@Override
 			public void onFinish() {
 				main.countdownView.setVisibility(View.GONE);
-				initiateGameTimers();	
+				if(startedGame){
+					initiateGameTimers();
+				}
 			}
 
 			@Override
@@ -87,7 +90,8 @@ public class EggGame {
 				main.countdownView.startAnimation(fadeOut);	
 			}
 			
-		}.start();
+		};
+		countdownTimer.start();
 		
 		
 
@@ -111,14 +115,17 @@ public class EggGame {
 
 					@Override
 					public void run() {
-						if(running){
+						if(timerRunning){
 							if (level != 0 && eggDelayTime >= 500) {
 								eggDelayTimer.cancel();
+								eggDelayTimer.purge();
 								eggDelayTime -= 250;
+								Log.d("LevelTimerTask", "Cancelled existing eggtask!");
 							}
 							createEggFallTimer();
-							eggDelayTimer.schedule(eggTimerTask, 400, eggDelayTime);
-							level += 1;
+							Log.d("LevelTimerTask", "Created createEggtask!");
+							eggDelayTimer.schedule(eggTimerTask, 1000, eggDelayTime);
+							level++;
 						}
 					}
 				});
@@ -132,7 +139,7 @@ public class EggGame {
 		//set things that prevent crash 
 		//when game is stopped while counting down
 		main.reset_btn.setEnabled(true);
-		running = true; 
+		timerRunning = true; 
 	}
 
 	protected void createEggFallTimer() {
@@ -147,7 +154,8 @@ public class EggGame {
 
 					@Override
 					public void run() {
-						if(running){
+						if(timerRunning){
+							Log.d("EggTimerTask", "Egg fall running!");
 							int position = generateRandomPosition();
 							startEggFall(position);
 						}
@@ -179,12 +187,12 @@ public class EggGame {
 				R.anim.eggdrop);
 
 		eggView.startAnimation(eggAnimation);
-		
+		animationStarted = true;
 		animListener = new AnimationListener() {
 
 			@Override
 			public void onAnimationEnd(Animation animation) {
-				if(running){
+				if(timerRunning){
 					eggView.setVisibility(View.GONE);
 					checkIfScored(pos);
 				}
@@ -310,7 +318,7 @@ public class EggGame {
 	}
 
 	public void resetGame() {
-		
+		Log.d("resetGame", "RESET");
 		numberOfLives = 3;
 		main.updateLives(numberOfLives);
 		scoreCount = 0;
@@ -320,20 +328,28 @@ public class EggGame {
 	}
 
 	public void stopGame() {
-		
-		running = false;
+		Log.d("stopGame", "STOPPED");
+		//important! this cancels remaining task scheduled on master timer
+		level = 0; 
+		cancelTimers();
+		if(animationStarted){
+			eggAnimation.cancel();
+			main.eggView.clearAnimation();
+		}
+		sensorManager.unregisterListener(eventListener);
+		startedGame = false;
+		animationStarted = false;
+	}
+
+	void cancelTimers() {
+		Log.d("cancelTimer", "TIMER CANCELLED");
+		timerRunning = false;
 		
 		masterLvlTimer.cancel();
 		eggDelayTimer.cancel();
 		
 		masterLvlTimer.purge();
 		eggDelayTimer.purge();
-		
-		eggAnimation.cancel();
-		main.eggView.clearAnimation();
-		
-		sensorManager.unregisterListener(eventListener);
-		
 	}
 	
 }

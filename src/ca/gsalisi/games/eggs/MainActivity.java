@@ -28,6 +28,8 @@ public class MainActivity extends Activity {
 	private TextView bestScoreView;
 	private int bestScore;
 	private SharedPreferences pref;
+	private Dialog overDialog;
+	private boolean gameOverBool;
 	
 	protected RelativeLayout rLayout;
 	protected ImageView eggView;
@@ -57,7 +59,9 @@ public class MainActivity extends Activity {
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
 		updateBest();
-
+		
+		gameOverBool = false;
+		
 		eggGame = new EggGame(MainActivity.this);
 		eggGame.startGame();
 
@@ -67,6 +71,8 @@ public class MainActivity extends Activity {
 			public void onClick(View view) {
 				eggGame.stopGame();
 				eggGame.resetGame();
+				bringChickensToFront();
+				gameOverBool = false;
 			}
 		});
 
@@ -76,43 +82,44 @@ public class MainActivity extends Activity {
 //	public void onBackPressed() {
 //		if()
 //	}
-
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if(eggGame.running){
-			eggGame.stopGame();
-		}
-		Log.d("GS", "On Destroy");
-
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		if(eggGame.running){
-			eggGame.stopGame();
-		}
-		Log.d("GS", "On PAUSE");
-		
-	}
-
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if(eggGame.running){
-			eggGame.stopGame();
+		if(eggGame.timerRunning || gameOverBool){
+			eggGame.cancelTimers();
+			Log.d("GS", "On stop -- stoppedGame");
 		}
-		Log.d("GS", "On Stop");
+		eggGame.startedGame = false;
+
+		Log.d("GS", "On stop ");
+		
 		
 	}
+
+//	@Override
+//	protected void onPause() {
+//		super.onPause();
+//		
+//		if(eggGame.running){
+//			eggGame.stopGame();
+//			Log.d("GS", "On Pause -- stoppedGame");
+//		}
+//		Log.d("GS", "On Pause");
+//		
+//		
+//	}
 	
 	@Override
 	protected void onResume(){
 		super.onResume();
 		Log.d("GS", "Resume");
+		
+		if(gameOverBool){
+			overDialog.dismiss();
+		}
+		
 		eggGame.resetGame();
+		bringChickensToFront();
 	}
 
 	// initialize rotation vector sensor
@@ -282,6 +289,8 @@ public class MainActivity extends Activity {
 	//show game over dialog
 	public void gameOver() {
 		
+		gameOverBool = true;
+		
 		if(eggGame.scoreCount > bestScore){
 			bestScore = eggGame.scoreCount;
 			pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
@@ -293,7 +302,7 @@ public class MainActivity extends Activity {
 		eggGame.stopGame();
 		bringChickensToFront();
 		
-		final Dialog overDialog = new Dialog(MainActivity.this);
+		overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
 		overDialog.setCancelable(false);
 		overDialog.setCanceledOnTouchOutside(false);
@@ -305,6 +314,7 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				eggGame.resetGame();
 				overDialog.dismiss();
+				gameOverBool = false;
 			}
 		});
 		overDialog.show();
