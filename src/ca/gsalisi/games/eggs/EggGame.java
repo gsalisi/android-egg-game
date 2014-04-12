@@ -99,8 +99,8 @@ public class EggGame {
 	
 
 	private void initiateGameTimers() {
-		// TODO Auto-generated method stub
 		
+		main.bringChickensToFront();
 		sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
@@ -323,7 +323,7 @@ public class EggGame {
 		main.updateLives(numberOfLives);
 		scoreCount = 0;
 		main.updateScore(scoreCount);
-
+		
 		startGame();
 	}
 

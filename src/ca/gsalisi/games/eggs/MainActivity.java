@@ -71,17 +71,13 @@ public class MainActivity extends Activity {
 			public void onClick(View view) {
 				eggGame.stopGame();
 				eggGame.resetGame();
-				bringChickensToFront();
 				gameOverBool = false;
 			}
 		});
 
 	}// end OnCreate
 	
-//	@Override
-//	public void onBackPressed() {
-//		if()
-//	}
+
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -96,18 +92,6 @@ public class MainActivity extends Activity {
 		
 	}
 
-//	@Override
-//	protected void onPause() {
-//		super.onPause();
-//		
-//		if(eggGame.running){
-//			eggGame.stopGame();
-//			Log.d("GS", "On Pause -- stoppedGame");
-//		}
-//		Log.d("GS", "On Pause");
-//		
-//		
-//	}
 	
 	@Override
 	protected void onResume(){
@@ -119,7 +103,6 @@ public class MainActivity extends Activity {
 		}
 		
 		eggGame.resetGame();
-		bringChickensToFront();
 	}
 
 	// initialize rotation vector sensor
@@ -138,10 +121,7 @@ public class MainActivity extends Activity {
 		chickenViewLeft = (ImageView) findViewById(R.id.chickenLeft);
 		chickenViewCenter = (ImageView) findViewById(R.id.chickenCenter);
 		chickenViewRight = (ImageView) findViewById(R.id.chickenRight);
-		
-		// bring chicken views to front
-		bringChickensToFront();
-		
+				
 		//---- Initialize broken eggs ----//
 		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -300,7 +280,7 @@ public class MainActivity extends Activity {
 			updateBest();
 		}
 		eggGame.stopGame();
-		bringChickensToFront();
+		//bringChickensToFront();
 		
 		overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
