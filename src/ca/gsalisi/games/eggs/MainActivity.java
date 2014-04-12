@@ -288,6 +288,12 @@ public class MainActivity extends Activity {
 		overDialog.setCanceledOnTouchOutside(false);
 		overDialog.setTitle("Game Over!");
 		
+		TextView scoreOver = (TextView) overDialog.findViewById(R.id.score_view2);
+		TextView bestOver = (TextView) overDialog.findViewById(R.id.best_view2);
+		
+		scoreOver.setText(scoreView.getText().toString());
+		bestOver.setText(bestScoreView.getText().toString());
+		
 		ImageButton restartbtn = (ImageButton) overDialog.findViewById(R.id.btn_gameover);
 		restartbtn.setOnClickListener(new OnClickListener(){
 			@Override

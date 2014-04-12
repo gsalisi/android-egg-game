@@ -3,8 +3,6 @@ package ca.gsalisi.games.eggs;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -18,7 +16,6 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class EggGame {
 
