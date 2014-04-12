@@ -29,7 +29,7 @@ import android.widget.RelativeLayout.LayoutParams;
 
 public class MainActivity extends Activity {
 
-	EggGame eggGame;
+	private EggGame eggGame;
 	protected RelativeLayout rLayout;
 	protected ImageView eggView;
 	
@@ -80,32 +80,46 @@ public class MainActivity extends Activity {
 
 	}// end OnCreate
 
-	protected void OnPause() {
-		super.onPause();
-		Log.d("GS", "On PAUSE");
-		eggGame.stopGame();
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.d("GS", "On Destroy");
 
 	}
-	protected void OnStop() {
-		super.onPause();
-		Log.d("GS", "On Stop");
-		eggGame.stopGame();
 
+	@Override
+	protected void onPause() {
+		
+		eggGame.stopGame();
+		super.onPause();
+		
+		Log.d("GS", "On PAUSE");
+		
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.d("GS", "On Stop");
+		
+	}
+	
+	@Override
+	protected void onResume(){
+		super.onResume();
+		Log.d("GS", "Resume");
+		eggGame.resetGame();
 	}
 
 	// initialize rotation vector sensor
 	protected void initSensors() {
 
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		rtnVectorSensor = sensorManager
-				.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+		rtnVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
 		eventListener = new MySensorEventListener(this);
 	}
-
 	// create views
 	protected void initializeGameGraphics() {
-
-		// scoreCount = 0; //initialize score
 
 		// ---- INITIALIZE CHICKENS --- //
 
@@ -113,9 +127,9 @@ public class MainActivity extends Activity {
 		chickenViewCenter = (ImageView) findViewById(R.id.chickenCenter);
 		chickenViewRight = (ImageView) findViewById(R.id.chickenRight);
 		
-		//lives
-		livesView = (TextView) findViewById(R.id.lives_view);
-
+		// bring chicken views to front
+		bringChickensToFront();
+		
 		//---- Initialize broken eggs ----//
 		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -169,8 +183,6 @@ public class MainActivity extends Activity {
 
 		// ----  create basket view ------//
 
-		//removed position
-
 		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -183,14 +195,19 @@ public class MainActivity extends Activity {
 		basketView.setLayoutParams(basketLayout);
 		rLayout.addView(basketView);
 
-		// ---------------------------------------------------
-		// bring chicken views to front
+
+		livesView = (TextView) findViewById(R.id.lives_view);
+		countdownView = (TextView) findViewById(R.id.countdown_view);
+	
+	}// end initializeGraphics()
+
+	void bringChickensToFront() {
+
 		chickenViewLeft.bringToFront();
 		chickenViewCenter.bringToFront();
 		chickenViewRight.bringToFront();
 
-		countdownView = (TextView) findViewById(R.id.countdown_view);
-	}// end initializeGraphics()
+	}
 
 	public ImageView createEgg(int position) {
 
@@ -252,14 +269,13 @@ public class MainActivity extends Activity {
 		default:
 			break;
 		}
-
-		
 		
 	}
 	
 	public void gameOver() {
 		
 		eggGame.stopGame();
+		bringChickensToFront();
 		
 		final Dialog overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
@@ -276,32 +292,31 @@ public class MainActivity extends Activity {
 			}
 		});
 		overDialog.show();
+		
 	}
 	
-	public int convertToPixel(int dp) {
-		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-				getResources().getDisplayMetrics());
-	}
-
+	
 	public void moveBasket(String string, int i) {
 		eggGame.moveBasket(string, i);
-
 	}
-
-	public int getBasketPosition() {
-			
+	// get the position of the basket from egg game
+	public int getBasketPosition() {	
 		return eggGame.getBasketPosition();
 	}
-
+	// updates lives text view
 	public void updateLives(int numberOfLives) {
 		livesView.setText(String.valueOf(numberOfLives));
 		
 	}
-	
+	// updates score text view
 	public void updateScore(int score) {
-
 		String countStr = "Score: " + String.valueOf(score);
 		scoreView.setText(countStr);
+	}
+	// converts dp to pixels.
+	public int convertToPixel(int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+				getResources().getDisplayMetrics());
 	}
 
 	

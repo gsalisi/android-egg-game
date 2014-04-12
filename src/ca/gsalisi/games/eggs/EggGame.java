@@ -65,30 +65,25 @@ public class EggGame {
 	}
 
 	protected void startGame() {
-		// creates a delay for every egg drop
+		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
 		main.countdownView.bringToFront();
-		
+		//initialize the animation for flashing count down
 		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
 		new CountDownTimer( 4000, 1000 ){
 
 			@Override
 			public void onFinish() {
-				//main.countdownView.setText("0");
 				main.countdownView.setVisibility(View.GONE);
-				initiateGameTimers();
-				
+				initiateGameTimers();	
 			}
 
 			@Override
 			public void onTick(long num) {
 				num /= 1000;
-				int timeLeft = (int) num;
-
-				main.countdownView.setText(String.valueOf(timeLeft));
-				main.countdownView.startAnimation(fadeOut);
-				
+				main.countdownView.setText(String.valueOf(num));
+				main.countdownView.startAnimation(fadeOut);	
 			}
 			
 		}.start();
@@ -100,7 +95,6 @@ public class EggGame {
 
 	private void initiateGameTimers() {
 		// TODO Auto-generated method stub
-		running = true; 
 		
 		sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
@@ -134,7 +128,10 @@ public class EggGame {
 		masterLvlTimer = new Timer();
 		masterLvlTimer.schedule(levelTimerTask, 200, 15000);
 		
+		//set things that prevent crash 
+		//when game is stopped while counting down
 		main.reset_btn.setEnabled(true);
+		running = true; 
 	}
 
 	protected void createEggFallTimer() {
@@ -335,6 +332,7 @@ public class EggGame {
 		main.eggView.clearAnimation();
 		
 		sensorManager.unregisterListener(eventListener);
+		
 	}
 	
 }
