@@ -94,7 +94,7 @@ public class MainActivity extends Activity {
 			Log.d("On Stop", "exception caught");
 		}
 		eggGame.gameInSession = false;
-
+		finish();
 		
 		
 	}//end onStop()
