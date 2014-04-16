@@ -37,6 +37,7 @@ public class EggGame {
 	protected CountDownTimer countdownTimer;
 	
 	public boolean gameInSession;
+	public boolean handlerStarted;
 
 	
 
@@ -46,6 +47,8 @@ public class EggGame {
 		main = mainActivity;
 		scoreCount = 0;
 		numberOfLives = 3;
+		handlerStarted = false;
+		gameInSession = false;
 
 //		sensorManager = main.sensorManager;
 //		eventListener = main.eventListener;
@@ -135,7 +138,7 @@ public class EggGame {
 		
 		//enable reset button when the handlers are running 
 		main.reset_btn.setEnabled(true);
-		
+		handlerStarted = true;
 	}
 
 	protected void createEggFallHandler() {
@@ -202,10 +205,11 @@ public class EggGame {
 
 					@Override
 					public void onAnimationEnd(Animation animation) {
-						
-						eggView.setVisibility(View.GONE);
-						main.checkIfScored(pos);
-						
+						if(handlerStarted){//condition prevents showing of broken egg
+							eggView.setVisibility(View.GONE);
+							main.checkIfScored(pos);
+							animationStarted = false;
+						}
 					}
 
 					@Override
@@ -233,6 +237,8 @@ public class EggGame {
 	//restarts the game
 	public void resetGame() {
 		Log.d("resetGame", "RESET");
+		
+		animationStarted = false;
 		numberOfLives = 3;
 		main.updateLives(numberOfLives);
 		scoreCount = 0;
@@ -246,18 +252,20 @@ public class EggGame {
 	public void stopGame() {
 		Log.d("stopGame", "STOPPED");
 		
+		gameInSession = false;
+		
 		level = 0; //important! this prevents remaining task scheduled 
 					//on master timer and level timer to continue 
 		
 		cancelTimers();
 		
 		if(animationStarted){
+			Log.d("stopGame","animation cleared!");
 			eggAnimation.cancel();
 			main.eggView.clearAnimation();
 		}
 		//sensorManager.unregisterListener(eventListener);
-		gameInSession = false;
-		animationStarted = false;
+		
 		
 	}//end of stopGame()
 
@@ -268,6 +276,7 @@ public class EggGame {
 		eggDelayHandler.removeCallbacks(eggDelayRunnable);
 		levelHandler.removeCallbacks(levelRunnable);
 		eggIntervalHandler.removeCallbacks(eggIntervalRunnable);
+		handlerStarted = false;
 	
 	}//end of cancelTimers()
 	

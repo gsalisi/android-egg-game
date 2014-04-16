@@ -87,31 +87,34 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		try{
-			eggGame.cancelTimers();
-			Log.d("On Stop", "Called cancel timers");
-		} catch(Exception e) {
-			Log.d("On Stop", "exception caught");
+		if(!gameOverBool){
+			try{
+				eggGame.stopGame();
+				Log.d("On Stop", "Called cancel timers");
+			} catch(Exception e) {
+				Log.d("On Stop", "exception caught");
+			}
+		}else{
+			overDialog.dismiss();
 		}
-		eggGame.gameInSession = false;
 		finish();
 		
 		
 	}//end onStop()
-
-	//restart a game when game is reopened
-	@Override
-	protected void onResume(){
-		super.onResume();
-		Log.d("GS", "Resume");
-		
-		//checks if game is at Game over phase
-		if(gameOverBool){
-			overDialog.dismiss();
-		}
-		eggGame.resetGame();
-		
-	}//end onResume()
+//
+//	//restart a game when game is reopened
+//	@Override
+//	protected void onResume(){
+//		super.onResume();
+//		Log.d("GS", "Resume");
+//		
+//		//checks if game is at Game over phase
+//		if(gameOverBool){
+//			overDialog.dismiss();
+//		}
+//		eggGame.resetGame();
+//		
+//	}//end onResume()
 
 	// initialize rotation vector sensor -- saved here for future references 
 	// if i decide to implement two control methods as an option for players
@@ -288,7 +291,9 @@ public class MainActivity extends Activity {
 			updateScore(eggGame.scoreCount);
 			
 		}else{
+			
 			showBrokenEgg(position);
+
 			eggGame.numberOfLives--;
 			
 			if(eggGame.numberOfLives <= 0){
@@ -357,8 +362,8 @@ public class MainActivity extends Activity {
 		restartbtn.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				eggGame.resetGame();
 				overDialog.dismiss();
+				eggGame.resetGame();
 				gameOverBool = false;
 			}
 		});
