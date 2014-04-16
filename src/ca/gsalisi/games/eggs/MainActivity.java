@@ -227,8 +227,8 @@ public class MainActivity extends Activity {
 		switch (position) {//0 for left; 1 for center; 2 for right
 		case 0:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-			layoutParams.setMargins(convertToPixel(25), convertToPixel(25), 0, 0);
-			layoutParams.height = convertToPixel(48);
+			layoutParams.setMargins(convertToPixel(25), convertToPixel(52), 0, 0);
+			layoutParams.height = convertToPixel(40);
 			
 
 			break;
@@ -236,20 +236,20 @@ public class MainActivity extends Activity {
 		
 			layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
 					RelativeLayout.TRUE);
-			layoutParams.setMargins(0, convertToPixel(25), 0, 0);
-			layoutParams.height = convertToPixel(48);
+			layoutParams.setMargins(0, convertToPixel(52), 0, 0);
+			layoutParams.height = convertToPixel(40);
 			break;
 		case 2:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-			layoutParams.setMargins(0, convertToPixel(25), convertToPixel(25), 0);
-			layoutParams.height = convertToPixel(48);
+			layoutParams.setMargins(0, convertToPixel(52), convertToPixel(25), 0);
+			layoutParams.height = convertToPixel(40);
 			break;
 		default:
 			break;
 		}
 
 		eggView = new ImageView(this);
-		eggView.setImageResource(R.drawable.egg_test);
+		eggView.setImageResource(R.drawable.egg_white);
 		eggView.setLayoutParams(layoutParams);
 
 		rLayout.addView(eggView);

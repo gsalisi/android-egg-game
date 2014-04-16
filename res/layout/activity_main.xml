@@ -22,31 +22,28 @@
 
     <ImageView
         android:id="@+id/chickenLeft"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginLeft="0dp"
         android:src="@drawable/chicken" />
 
     <ImageView
         android:id="@+id/chickenCenter"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="14dp"
         android:src="@drawable/chicken" />
 
     <ImageView
         android:id="@+id/chickenRight"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginRight="0dp"
         android:src="@drawable/chicken" />
 <!-- saved just for debugging purposes
      <TextView
@@ -164,7 +161,7 @@
 	            android:id="@+id/basketView"
 	            android:layout_width="380dp"
 	            android:layout_height="55dp"
-	            android:src="@drawable/nest" />
+	            android:src="@drawable/basket" />
 	        
 	    </LinearLayout>
 	</ca.gsalisi.games.eggs.MyScrollView>
