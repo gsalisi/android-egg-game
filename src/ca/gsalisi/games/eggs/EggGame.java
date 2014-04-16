@@ -1,21 +1,14 @@
 package ca.gsalisi.games.eggs;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 public class EggGame {
 
@@ -43,8 +36,8 @@ public class EggGame {
 	protected int numberOfLives;
 	protected CountDownTimer countdownTimer;
 	
-	public boolean startedGame;
-	public boolean handlerRunning;
+	public boolean gameInSession;
+
 	
 
 	//Egg Game Constructor
@@ -64,7 +57,7 @@ public class EggGame {
 	protected void startGame() {
 		
 		//signals that the game started but no timers yet
-		startedGame = true;
+		gameInSession = true;
 		
 		//put the basket in center
 		main.hScroll.post(new Runnable(){
@@ -88,7 +81,7 @@ public class EggGame {
 			@Override
 			public void onFinish() {
 				main.countdownView.setVisibility(View.GONE);
-				if(startedGame){
+				if(gameInSession){
 					initiateGameHandlers();
 				}
 			}
@@ -120,27 +113,29 @@ public class EggGame {
 
 			@Override
 			public void run() {
-				if(handlerRunning){
-					if (level != 0 && eggDelayTime >= 800) {
-						eggDelayTime -= 100;
-						level++;
-						Log.d("LevelRunnable", "Increased Speed!");
-					}
-					if(level == 0){
-						createEggFallHandler();
-						level++;
-						Log.d("LevelRunnable", "Created createEggHandler!");	
-					}
+			
+				if (level != 0 && eggDelayTime >= 800) {
+					eggDelayTime -= 100;
+					level++;
+					Log.d("LevelRunnable", "Increased Speed!");
 				}
-				levelHandler.postDelayed(levelRunnable, 8000);
+				if(level == 0){
+						
+					createEggFallHandler();
+					level++;
+					Log.d("LevelRunnable", "Created createEggHandler!");	
+				}
+				if(gameInSession){
+					levelHandler.postDelayed(levelRunnable, 8000);
+				}
 			}
 		};
 
 		levelHandler.post(levelRunnable);
 		
-		//enable reset button when the timers are running 
+		//enable reset button when the handlers are running 
 		main.reset_btn.setEnabled(true);
-		handlerRunning = true; 
+		
 	}
 
 	protected void createEggFallHandler() {
@@ -150,16 +145,18 @@ public class EggGame {
 
 			@Override
 			public void run() {
-				if(handlerRunning){
-					Log.d("EggTimerTask", "Egg fall running!");
-					int position = generateRandomPosition();
-					startEggFall(position);
+				Log.d("EggInterval Handler", "Egg fall called!");
+				int position = generateRandomPosition();
+				startEggFall(position);
+				if(gameInSession){
+					eggIntervalHandler.postDelayed(eggIntervalRunnable, eggDelayTime);
 				}
-				eggIntervalHandler.postDelayed(eggIntervalRunnable, eggDelayTime);
 			}
 		};
-
-		eggIntervalHandler.post(eggIntervalRunnable);
+		if(gameInSession){
+			eggIntervalHandler.post(eggIntervalRunnable);
+		}
+		
 
 	}// end startEggFallTimer
 
@@ -180,6 +177,7 @@ public class EggGame {
 		Random r = new Random();
 		int delayEggFall = r.nextInt(800);
 		
+		Log.d("Delay Egg Fall", "Egg fall delay: " +String.valueOf(delayEggFall));
 		eggDelayHandler = new Handler();
 		eggDelayRunnable = new Runnable(){
 
@@ -188,6 +186,7 @@ public class EggGame {
 				//creates the egg
 				final ImageView eggView = main.createEgg(pos);
 				
+				//set falling animation
 				eggAnimation = AnimationUtils.loadAnimation(main,
 						R.anim.eggdrop);
 				//set a random duration for egg fall ranging from 
@@ -203,10 +202,10 @@ public class EggGame {
 
 					@Override
 					public void onAnimationEnd(Animation animation) {
-						if(handlerRunning){
-							eggView.setVisibility(View.GONE);
-							main.checkIfScored(pos);
-						}
+						
+						eggView.setVisibility(View.GONE);
+						main.checkIfScored(pos);
+						
 					}
 
 					@Override
@@ -216,7 +215,7 @@ public class EggGame {
 
 					@Override
 					public void onAnimationStart(Animation animation) {
-
+						//animate chicken here
 					}
 
 				};
@@ -257,7 +256,7 @@ public class EggGame {
 			main.eggView.clearAnimation();
 		}
 		//sensorManager.unregisterListener(eventListener);
-		startedGame = false;
+		gameInSession = false;
 		animationStarted = false;
 		
 	}//end of stopGame()
@@ -269,8 +268,7 @@ public class EggGame {
 		eggDelayHandler.removeCallbacks(eggDelayRunnable);
 		levelHandler.removeCallbacks(levelRunnable);
 		eggIntervalHandler.removeCallbacks(eggIntervalRunnable);
-		handlerRunning = false;
-
+	
 	}//end of cancelTimers()
 	
 }

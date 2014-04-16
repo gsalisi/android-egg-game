@@ -87,13 +87,14 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if(eggGame.handlerRunning || gameOverBool){
+		try{
 			eggGame.cancelTimers();
-			Log.d("GS", "On stop -- stoppedGame");
+			Log.d("On Stop", "Called cancel timers");
+		} catch(Exception e) {
+			Log.d("On Stop", "exception caught");
 		}
-		eggGame.startedGame = false;
+		eggGame.gameInSession = false;
 
-		Log.d("GS", "On stop ");
 		
 		
 	}//end onStop()
