@@ -48,7 +48,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="14dp"
         android:src="@drawable/chicken" />
-<!-- 
+<!-- saved just for debugging purposes
      <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -68,14 +68,6 @@
         android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium" /> -->
 
-   <!-- <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView3"
-        android:layout_below="@+id/textView3"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium" /> -->
  
 	<ImageView
 	    android:id="@+id/imageView1"

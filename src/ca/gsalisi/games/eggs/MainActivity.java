@@ -58,15 +58,17 @@ public class MainActivity extends Activity {
 		initializeGameGraphics(); // initialize graphics for main view
 		//initSensors(); // initialize sensors
 		
+		//get existing highscore
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
-		updateBest();
+		updateBest(); //update highscore view
 		
-		gameOverBool = false;
+		gameOverBool = false; //signals the game is not in the game over state
 		
-		eggGame = new EggGame(MainActivity.this);
-		eggGame.startGame();
+		eggGame = new EggGame(MainActivity.this); //instantiate game class
+		eggGame.startGame();//starts the game
 
+		//reset button
 		reset_btn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -79,7 +81,9 @@ public class MainActivity extends Activity {
 
 	}// end OnCreate
 	
-
+	//cancel timers when the window is closed or when 
+	//back button or home button is pressed to prevent
+	//eggs falling even when out of game
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -92,33 +96,38 @@ public class MainActivity extends Activity {
 		Log.d("GS", "On stop ");
 		
 		
-	}
+	}//end onStop()
 
-	
+	//restart a game when game is reopened
 	@Override
 	protected void onResume(){
 		super.onResume();
 		Log.d("GS", "Resume");
 		
+		//checks if game is at Game over phase
 		if(gameOverBool){
 			overDialog.dismiss();
 		}
-		
 		eggGame.resetGame();
-	}
+		
+	}//end onResume()
 
-	// initialize rotation vector sensor
+	// initialize rotation vector sensor -- saved here for future references 
+	// if i decide to implement two control methods as an option for players
+	
 //	protected void initSensors() {
 //
 //		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 //		rtnVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
 //		eventListener = new MySensorEventListener(this);
 //	}
+	
 	// create views
 	protected void initializeGameGraphics() {
 
 		rLayout = (RelativeLayout) findViewById(R.id.rLayout);
-		// ---- INITIALIZE CHICKENS --- //
+		
+		// ---- create chicken references --- //
 
 		chickenViewLeft = (ImageView) findViewById(R.id.chickenLeft);
 		chickenViewCenter = (ImageView) findViewById(R.id.chickenCenter);
@@ -175,19 +184,8 @@ public class MainActivity extends Activity {
 		eggBrokenCenter.setVisibility(View.INVISIBLE);
 		eggBrokenRight.setVisibility(View.INVISIBLE);
 
-		// ----  create basket view ------//
+		// ----------------  create basket view -------------------//
 
-//		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
-//				ViewGroup.LayoutParams.WRAP_CONTENT,
-//				ViewGroup.LayoutParams.WRAP_CONTENT);
-//		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//		basketLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-//		basketLayout.width = convertToPixel(120);
-//
-//		basketView = new ImageView(this);
-//		basketView.setImageResource(R.drawable.nest);
-//		basketView.setLayoutParams(basketLayout);
-//		rLayout.addView(basketView);
 		hScroll = (MyScrollView) findViewById(R.id.hScrollView);
 		basketView = (ImageView) findViewById(R.id.basketView);
 		
@@ -211,7 +209,7 @@ public class MainActivity extends Activity {
 
 	}//end of chickensToFront()
 
-	//creates a new egg view for in its respective position
+	//creates a new egg view in the required position
 	public ImageView createEgg(int position) {
 		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -250,8 +248,11 @@ public class MainActivity extends Activity {
 		rLayout.addView(eggView);
 
 		return eggView;
+		
 	}//end of createEgg()
 	
+	//check if basket is in the right position
+	//if it is then we add score, if not we subtract from lives
 	public void checkIfScored(int position) {
 		boolean caught = false;
 		
@@ -295,7 +296,7 @@ public class MainActivity extends Activity {
 			}
 		}
 		
-	}
+	}//end of checkIfScored()
 	
 	public void showBrokenEgg(int position) {
 		
@@ -327,7 +328,7 @@ public class MainActivity extends Activity {
 		
 		gameOverBool = true;
 		
-		if(eggGame.scoreCount > bestScore){
+		if(eggGame.scoreCount > bestScore){//save high score if it is beaten
 			bestScore = eggGame.scoreCount;
 			pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 			Editor editor = pref.edit();
@@ -336,7 +337,6 @@ public class MainActivity extends Activity {
 			updateBest();
 		}
 		eggGame.stopGame();
-		//bringChickensToFront();
 		
 		overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
@@ -363,14 +363,7 @@ public class MainActivity extends Activity {
 		
 	}//end of gameOver()
 	
-	//moves the basket in eggGame class
-//	public void moveBasket(String string, int i) {
-//		eggGame.moveBasket(string, i);
-//	}
-	// get the position of the basket from egg game
-//	public int getBasketPosition() {	
-//		return eggGame.getBasketPosition();
-//	}
+
 	// updates lives text view
 	public void updateLives(int numberOfLives) {
 		livesView.setText(String.valueOf(numberOfLives));
