@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if(eggGame.timerRunning || gameOverBool){
+		if(eggGame.handlerRunning || gameOverBool){
 			eggGame.cancelTimers();
 			Log.d("GS", "On stop -- stoppedGame");
 		}
