@@ -83,11 +83,11 @@
         android:layout_height="40dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="18dp"
+        android:layout_marginLeft="28dp"
         android:gravity="center"
         android:text="Score: 0"
         android:textColor="#ffffff"
-        android:textSize="22sp" />
+        android:textSize="25sp" />
 
 	<TextView
 	    android:id="@+id/best_view"
@@ -95,11 +95,11 @@
 	    android:layout_height="40dp"
 	    android:layout_alignParentRight="true"
 	    android:layout_centerVertical="true"
-	    android:layout_marginRight="18dp"
+	    android:layout_marginRight="28dp"
 	    android:gravity="center"
 	    android:text="Best: X"
 	    android:textColor="#ffffff"
-	    android:textSize="22sp" />
+	    android:textSize="25sp" />
 
 	<ImageButton
 	    android:id="@+id/btn_reset"
@@ -122,28 +122,26 @@
 	    android:text="3" />
 	
 	<TextView
+	    android:id="@+id/lives_label"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_centerHorizontal="true"
-		android:layout_alignTop="@id/lives_view"
+		android:layout_above="@id/lives_view"
 	    android:textSize="10sp"
-	    android:layout_marginBottom="2dp"
 	    android:textColor="#ffffff"
-	    android:text="Lives" />
+	    android:text="Lives" 
+	    />
 
 	<TextView
 	    android:id="@+id/countdown_view"
 	    android:layout_width="match_parent"
 	    android:layout_height="fill_parent"
-	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:alpha="0.9"
-	    android:background="#ff000000"
+	    android:layout_marginTop="50dp"
 	    android:gravity="center"
 	    android:text="3"
-	    android:textAppearance="?android:attr/textAppearanceLarge"
 	    android:textColor="#ffffff"
-	    android:textSize="100sp" /> 
+	    android:textSize="300sp" /> 
 
 	<ca.gsalisi.games.eggs.MyScrollView
 	    android:id="@+id/hScrollView"

@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity {
 	private boolean gameOverBool;
 	private int xBasketPosition;
 	private int bestScore;
+	private Typeface typeface;
 	
 	//protected SensorManager sensorManager;
 	//protected SensorEventListener eventListener;
@@ -117,7 +119,10 @@ public class MainActivity extends Activity {
 	
 	// create views
 	protected void initializeGameGraphics() {
-
+		
+		typeface = Typeface.createFromAsset(this.getAssets(),
+		        "fonts/roostheavy.ttf");
+		
 		rLayout = (RelativeLayout) findViewById(R.id.rLayout);
 		
 		// ---- create chicken references --- //
@@ -191,6 +196,14 @@ public class MainActivity extends Activity {
 		scoreView = (TextView) findViewById(R.id.score_view);
 		reset_btn = (ImageButton) findViewById(R.id.btn_reset);
 		bestScoreView = (TextView) findViewById(R.id.best_view);
+		TextView livesLabel = (TextView) findViewById(R.id.lives_label);
+		
+		livesLabel.setTypeface(typeface);
+		countdownView.setTypeface(typeface);
+		livesView.setTypeface(typeface);
+		scoreView.setTypeface(typeface);
+		bestScoreView.setTypeface(typeface);
+		
 	
 	}// end initializeGraphics()
 
