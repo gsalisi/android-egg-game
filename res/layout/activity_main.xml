@@ -84,7 +84,7 @@
         android:gravity="center"
         android:text="Score: 0"
         android:textColor="#ffffff"
-        android:textSize="25sp" />
+        android:textSize="22sp" />
 
 	<TextView
 	    android:id="@+id/best_view"
@@ -96,15 +96,15 @@
 	    android:gravity="center"
 	    android:text="Best: X"
 	    android:textColor="#ffffff"
-	    android:textSize="25sp" />
+	    android:textSize="22sp" />
 
 	<ImageButton
 	    android:id="@+id/btn_reset"
-	    android:layout_width="50dp"
-	    android:layout_height="50dp"
+	    android:layout_width="80dp"
+	    android:layout_height="80dp"
 	    android:layout_alignBottom="@+id/imageView1"
 	    android:layout_centerHorizontal="true"
-	    android:background="#11000000"
+	    android:background="#22000000"
 	    android:src="@android:drawable/ic_menu_rotate" />
 
 
@@ -114,7 +114,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_centerHorizontal="true"
 	    android:layout_centerVertical="true"
-	    android:textSize="50sp"
+	    android:textSize="60sp"
 	    android:textColor="#ffffff"
 	    android:text="3" />
 	

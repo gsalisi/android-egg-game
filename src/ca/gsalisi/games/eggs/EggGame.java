@@ -172,6 +172,7 @@ public class EggGame {
 
 	//method that creates and animates the egg
 	protected void startEggFall(int position) {
+		
 		//set to final so it's accessible inside runnable
 		final int pos = position;
 		
@@ -186,19 +187,21 @@ public class EggGame {
 
 			@Override
 			public void run() {
+				//shakes chicken
+				main.shakeChicken(pos);
+				
 				//creates the egg
 				final ImageView eggView = main.createEgg(pos);
 				
 				//set falling animation
 				eggAnimation = AnimationUtils.loadAnimation(main,
 						R.anim.eggdrop);
-				//set a random duration for egg fall ranging from 
-				//1.6-2 seconds
+				//set a random duration for egg fall ranging from 1.6-2 seconds
 				Random rand = new Random();
 				int duration = rand.nextInt(400) + 1600;
-				
 				eggAnimation.setDuration(duration);
 				
+				//start animation
 				eggView.startAnimation(eggAnimation);
 				animationStarted = true;
 				animListener = new AnimationListener() {
@@ -219,7 +222,7 @@ public class EggGame {
 
 					@Override
 					public void onAnimationStart(Animation animation) {
-						//animate chicken here
+
 					}
 
 				};

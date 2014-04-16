@@ -405,6 +405,24 @@ public class MainActivity extends Activity {
 		return (int) this.getResources().getDisplayMetrics().heightPixels;
 	}
 
+	public void shakeChicken(int pos) {
+		Animation anim = AnimationUtils.loadAnimation(this, R.anim.shake);
+		
+		switch (pos) {
+		case 0:
+			chickenViewLeft.startAnimation(anim);
+			break;
+		case 1:
+			chickenViewCenter.startAnimation(anim);
+			break;
+		case 2:
+			chickenViewRight.startAnimation(anim);
+			break;
+		default:
+			break;
+		}
+	}
+
 
 	
 
