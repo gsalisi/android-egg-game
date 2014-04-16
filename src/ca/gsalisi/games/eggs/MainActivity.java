@@ -58,10 +58,10 @@ public class MainActivity extends Activity {
 		initializeGameGraphics(); // initialize graphics for main view
 		//initSensors(); // initialize sensors
 		
-		//get existing highscore
+		//get existing high score
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
-		updateBest(); //update highscore view
+		updateBest(); //update high score view
 		
 		gameOverBool = false; //signals the game is not in the game over state
 		
@@ -190,6 +190,7 @@ public class MainActivity extends Activity {
 		basketView = (ImageView) findViewById(R.id.basketView);
 		
 		basketView.getLayoutParams().width = getDeviceWidth()*2 - convertToPixel(170);
+		
 		//-------------- create view references -----------------//
 
 		livesView = (TextView) findViewById(R.id.lives_view);
@@ -338,6 +339,7 @@ public class MainActivity extends Activity {
 		}
 		eggGame.stopGame();
 		
+		//creates dialog
 		overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
 		overDialog.setCancelable(false);

@@ -20,50 +20,57 @@ import android.widget.RelativeLayout;
 public class EggGame {
 
 	private MainActivity main;
+	
 //	private SensorManager sensorManager;
 //	private SensorEventListener eventListener;
-	//private Sensor rtnVectorSensor;
+//	private Sensor rtnVectorSensor;
+	
 	private Timer eggDelayTimer;
 	private Timer masterLvlTimer;
 	private TimerTask eggTimerTask;
 	private AnimationListener animListener;
 	private Animation eggAnimation;
-	private ImageView basketView;
-	
-//	private int rightMargin;
-//	private int leftMargin;
 	private int eggDelayTime;
-//	private int rightBound = 118;
-//	private int leftBound = -118;
+	private boolean animationStarted;
 	
-	public boolean timerRunning;
 	protected int level;
 	protected int scoreCount;
-	//protected int xBasketPosition;
 	protected int numberOfLives;
 	protected CountDownTimer countdownTimer;
+	
 	public boolean startedGame;
-	private boolean animationStarted;
+	public boolean timerRunning;
+	
 
+	//Egg Game Constructor
 	public EggGame(MainActivity mainActivity) {
-		// constructor
+	
 		main = mainActivity;
+		scoreCount = 0;
+		numberOfLives = 3;
+
 //		sensorManager = main.sensorManager;
 //		eventListener = main.eventListener;
 //		rtnVectorSensor = main.rtnVectorSensor;
-		basketView = main.basketView;
-		scoreCount = 0;
-//		rightMargin = main.convertToPixel(60) * (-1);
-//		leftMargin = main.convertToPixel(60) * (-1); 
-//		xBasketPosition = 0;
-		numberOfLives = 3;
 		
+	}//end of constructor
 
-	}
-
+	//starts the game
 	protected void startGame() {
 		
+		//signals that the game started but no timers yet
 		startedGame = true;
+		
+		//put the basket in center
+		main.hScroll.post(new Runnable(){
+
+			@Override
+			public void run() {
+				main.hScroll.smoothScrollTo(main.convertToPixel(120),0);
+				
+			}
+			
+		});
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
@@ -90,7 +97,6 @@ public class EggGame {
 			
 		};
 		countdownTimer.start();
-		
 		
 
 	}// end startGame
