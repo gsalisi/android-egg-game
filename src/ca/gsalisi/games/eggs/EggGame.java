@@ -20,9 +20,9 @@ import android.widget.RelativeLayout;
 public class EggGame {
 
 	private MainActivity main;
-	private SensorManager sensorManager;
-	private SensorEventListener eventListener;
-	private Sensor rtnVectorSensor;
+//	private SensorManager sensorManager;
+//	private SensorEventListener eventListener;
+	//private Sensor rtnVectorSensor;
 	private Timer eggDelayTimer;
 	private Timer masterLvlTimer;
 	private TimerTask eggTimerTask;
@@ -30,16 +30,16 @@ public class EggGame {
 	private Animation eggAnimation;
 	private ImageView basketView;
 	
-	private int rightMargin;
-	private int leftMargin;
+//	private int rightMargin;
+//	private int leftMargin;
 	private int eggDelayTime;
-	private int rightBound = 118;
-	private int leftBound = -118;
+//	private int rightBound = 118;
+//	private int leftBound = -118;
 	
 	public boolean timerRunning;
 	protected int level;
 	protected int scoreCount;
-	protected int xBasketPosition;
+	//protected int xBasketPosition;
 	protected int numberOfLives;
 	protected CountDownTimer countdownTimer;
 	public boolean startedGame;
@@ -48,15 +48,16 @@ public class EggGame {
 	public EggGame(MainActivity mainActivity) {
 		// constructor
 		main = mainActivity;
-		sensorManager = main.sensorManager;
-		eventListener = main.eventListener;
-		rtnVectorSensor = main.rtnVectorSensor;
+//		sensorManager = main.sensorManager;
+//		eventListener = main.eventListener;
+//		rtnVectorSensor = main.rtnVectorSensor;
 		basketView = main.basketView;
 		scoreCount = 0;
-		rightMargin = main.convertToPixel(60) * (-1);
-		leftMargin = main.convertToPixel(60) * (-1); 
-		xBasketPosition = 0;
+//		rightMargin = main.convertToPixel(60) * (-1);
+//		leftMargin = main.convertToPixel(60) * (-1); 
+//		xBasketPosition = 0;
 		numberOfLives = 3;
+		
 
 	}
 
@@ -98,7 +99,7 @@ public class EggGame {
 	private void initiateGameTimers() {
 		
 		main.bringChickensToFront();
-		sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
+		//sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
 		eggDelayTime = 3500;
@@ -191,7 +192,7 @@ public class EggGame {
 			public void onAnimationEnd(Animation animation) {
 				if(timerRunning){
 					eggView.setVisibility(View.GONE);
-					checkIfScored(pos);
+					main.checkIfScored(pos);
 				}
 			}
 
@@ -210,109 +211,109 @@ public class EggGame {
 
 	}// end startEggFall()
 
-	protected void checkIfScored(int position) {
-		
-		boolean caught = false;
+//	protected void checkIfScored(int position) {
+//		
+//		boolean caught = false;
+//
+//		switch (position) {
+//		case 0:
+//			
+//			if(xBasketPosition < main.convertToPixel(-90)){
+//				caught = true;
+//			}
+//			
+//			break;
+//		case 1:
+//			if(xBasketPosition < main.convertToPixel(30) 
+//						&& xBasketPosition > main.convertToPixel(-30)){
+//				caught = true;
+//			}
+//			break;
+//		case 2:
+//			if(xBasketPosition > main.convertToPixel(90)){
+//				caught = true;
+//			}
+//			break;
+//		default:
+//			break;
+//		}
+//		
+//		if(caught){
+//			scoreCount += 1;
+//			main.updateScore(scoreCount);
+//			
+//		}else{
+//			main.showBrokenEgg(position);
+//			numberOfLives--;
+//			
+//			if(numberOfLives <= 0){
+//				main.gameOver();
+//			}else{
+//				main.updateLives(numberOfLives);
+//			}
+//		}
+//		
+//	}//end check if scored
 
-		switch (position) {
-		case 0:
+//	public void moveBasket(String direction, int incrementValue) {
+//
+//		final int unitInc = main.convertToPixel(incrementValue);
+//		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
+//				ViewGroup.LayoutParams.WRAP_CONTENT,
+//				ViewGroup.LayoutParams.WRAP_CONTENT);
+//		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//		basketLayout.width = main.convertToPixel(120);
+//	
+//
+//		if (direction.equals("right")) {
+//			if (xBasketPosition <= main.convertToPixel(rightBound)) {
+//				if (xBasketPosition == 0 || xBasketPosition > 0) {
+//					// 128dp is set to compensate on how big the nest is 
+//					// see layout parameter rule!
+//					rightMargin = main.convertToPixel(-60);
+//					leftMargin += unitInc;
+//					basketLayout.addRule(RelativeLayout.RIGHT_OF,
+//							R.id.centerRef);
+//					basketLayout.setMargins(leftMargin, 0, 0, 0);
+//
+//				} else {
+//					rightMargin -= unitInc;
+//					basketLayout.addRule(RelativeLayout.LEFT_OF,
+//							R.id.centerRef);
+//					basketLayout.setMargins(0, 0, rightMargin, 0);
+//				}
+//
+//				xBasketPosition += unitInc;
+//				basketView.setLayoutParams(basketLayout);
+//			}
+//		} else {
+//
+//			if (xBasketPosition >= main.convertToPixel(leftBound)) {
+//
+//				if (xBasketPosition == 0 || xBasketPosition > 0) {
+//					leftMargin -= unitInc;
+//					basketLayout.addRule(RelativeLayout.RIGHT_OF,
+//							R.id.centerRef);
+//					basketLayout.setMargins(leftMargin, 0, 0, 0);
+//				} else {
+//					// 128dp is set to compensate on how big the chicken center is 
+//					// see layout parameter rule!
+//					leftMargin = main.convertToPixel(-60);
+//					rightMargin += unitInc;
+//					basketLayout.addRule(RelativeLayout.LEFT_OF,
+//							R.id.centerRef);
+//					basketLayout.setMargins(0, 0, rightMargin, 0);
+//				}
+//				xBasketPosition -= unitInc;
+//				basketView.setLayoutParams(basketLayout);
+//			}
+//		}
+//
+//	}// end of moveBasket()
 
-			if(xBasketPosition < main.convertToPixel(-90)){
-				caught = true;
-			}
-			
-			break;
-		case 1:
-			if(xBasketPosition < main.convertToPixel(30) 
-						&& xBasketPosition > main.convertToPixel(-30)){
-				caught = true;
-			}
-			break;
-		case 2:
-			if(xBasketPosition > main.convertToPixel(90)){
-				caught = true;
-			}
-			break;
-		default:
-			break;
-		}
-		
-		if(caught){
-			scoreCount += 1;
-			main.updateScore(scoreCount);
-			
-		}else{
-			main.showBrokenEgg(position);
-			numberOfLives--;
-			
-			if(numberOfLives <= 0){
-				main.gameOver();
-			}else{
-				main.updateLives(numberOfLives);
-			}
-		}
-		
-	}//end check if scored
-
-	public void moveBasket(String direction, int incrementValue) {
-
-		final int unitInc = main.convertToPixel(incrementValue);
-		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		basketLayout.width = main.convertToPixel(120);
-	
-
-		if (direction.equals("right")) {
-			if (xBasketPosition <= main.convertToPixel(rightBound)) {
-				if (xBasketPosition == 0 || xBasketPosition > 0) {
-					// 128dp is set to compensate on how big the nest is 
-					// see layout parameter rule!
-					rightMargin = main.convertToPixel(-60);
-					leftMargin += unitInc;
-					basketLayout.addRule(RelativeLayout.RIGHT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(leftMargin, 0, 0, 0);
-
-				} else {
-					rightMargin -= unitInc;
-					basketLayout.addRule(RelativeLayout.LEFT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(0, 0, rightMargin, 0);
-				}
-
-				xBasketPosition += unitInc;
-				basketView.setLayoutParams(basketLayout);
-			}
-		} else {
-
-			if (xBasketPosition >= main.convertToPixel(leftBound)) {
-
-				if (xBasketPosition == 0 || xBasketPosition > 0) {
-					leftMargin -= unitInc;
-					basketLayout.addRule(RelativeLayout.RIGHT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(leftMargin, 0, 0, 0);
-				} else {
-					// 128dp is set to compensate on how big the chicken center is 
-					// see layout parameter rule!
-					leftMargin = main.convertToPixel(-60);
-					rightMargin += unitInc;
-					basketLayout.addRule(RelativeLayout.LEFT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(0, 0, rightMargin, 0);
-				}
-				xBasketPosition -= unitInc;
-				basketView.setLayoutParams(basketLayout);
-			}
-		}
-
-	}// end of moveBasket()
-
-	public int getBasketPosition() {
-		return xBasketPosition;
-	}
+//	public int getBasketPosition() {
+//		return xBasketPosition;
+//	}
 
 	public void resetGame() {
 		Log.d("resetGame", "RESET");
@@ -333,7 +334,7 @@ public class EggGame {
 			eggAnimation.cancel();
 			main.eggView.clearAnimation();
 		}
-		sensorManager.unregisterListener(eventListener);
+		//sensorManager.unregisterListener(eventListener);
 		startedGame = false;
 		animationStarted = false;
 	}

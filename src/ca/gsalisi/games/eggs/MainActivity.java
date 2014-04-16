@@ -30,7 +30,9 @@ public class MainActivity extends Activity {
 	private SharedPreferences pref;
 	private Dialog overDialog;
 	private boolean gameOverBool;
+	private int xBasketPosition;
 	
+	protected MyScrollView hScroll;
 	protected RelativeLayout rLayout;
 	protected ImageView eggView;
 	protected ImageView chickenViewLeft;
@@ -54,7 +56,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		initializeGameGraphics(); // initialize graphics for main view
-		initSensors(); // initialize sensors
+		//initSensors(); // initialize sensors
 		
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
@@ -106,12 +108,12 @@ public class MainActivity extends Activity {
 	}
 
 	// initialize rotation vector sensor
-	protected void initSensors() {
-
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		rtnVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
-		eventListener = new MySensorEventListener(this);
-	}
+//	protected void initSensors() {
+//
+//		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+//		rtnVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+//		eventListener = new MySensorEventListener(this);
+//	}
 	// create views
 	protected void initializeGameGraphics() {
 
@@ -123,7 +125,7 @@ public class MainActivity extends Activity {
 		chickenViewRight = (ImageView) findViewById(R.id.chickenRight);
 				
 		//---- Initialize broken eggs ----//
-		
+		//needs to create a function to make the code better and shorter!!
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -175,18 +177,22 @@ public class MainActivity extends Activity {
 
 		// ----  create basket view ------//
 
-		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		basketLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		basketLayout.width = convertToPixel(120);
-
-		basketView = new ImageView(this);
-		basketView.setImageResource(R.drawable.nest);
-		basketView.setLayoutParams(basketLayout);
-		rLayout.addView(basketView);
-
+//		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
+//				ViewGroup.LayoutParams.WRAP_CONTENT,
+//				ViewGroup.LayoutParams.WRAP_CONTENT);
+//		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//		basketLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//		basketLayout.width = convertToPixel(120);
+//
+//		basketView = new ImageView(this);
+//		basketView.setImageResource(R.drawable.nest);
+//		basketView.setLayoutParams(basketLayout);
+//		rLayout.addView(basketView);
+		hScroll = (MyScrollView) findViewById(R.id.hScrollView);
+		basketView = (ImageView) findViewById(R.id.basketView);
+		
+		basketView.getLayoutParams().width = getDeviceWidth()*2 - convertToPixel(170);
+		//-------------- create view references -----------------//
 
 		livesView = (TextView) findViewById(R.id.lives_view);
 		countdownView = (TextView) findViewById(R.id.countdown_view);
@@ -196,22 +202,24 @@ public class MainActivity extends Activity {
 	
 	}// end initializeGraphics()
 
+	//set the chicken views to the front
 	void bringChickensToFront() {
 
 		chickenViewLeft.bringToFront();
 		chickenViewCenter.bringToFront();
 		chickenViewRight.bringToFront();
 
-	}
+	}//end of chickensToFront()
 
+	//creates a new egg view for in its respective position
 	public ImageView createEgg(int position) {
-
+		
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 				ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT);
 		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 
-		switch (position) {
+		switch (position) {//0 for left; 1 for center; 2 for right
 		case 0:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 			layoutParams.setMargins(convertToPixel(25), convertToPixel(25), 0, 0);
@@ -242,9 +250,56 @@ public class MainActivity extends Activity {
 		rLayout.addView(eggView);
 
 		return eggView;
+	}//end of createEgg()
+	
+	public void checkIfScored(int position) {
+		boolean caught = false;
+		
+		xBasketPosition = hScroll.getScrollX();
+		
+		switch (position) {
+		case 0:
+			
+			if(xBasketPosition > convertToPixel(220)){
+				caught = true;
+			}
+			
+			break;
+		case 1:
+			if(xBasketPosition < convertToPixel(140) 
+						&& xBasketPosition > convertToPixel(100)){
+				caught = true;
+			}
+			break;
+		case 2:
+			if(xBasketPosition < convertToPixel(30)){
+				caught = true;
+			}
+			break;
+		default:
+			break;
+		}
+		
+		if(caught){
+			eggGame.scoreCount += 1;
+			updateScore(eggGame.scoreCount);
+			
+		}else{
+			showBrokenEgg(position);
+			eggGame.numberOfLives--;
+			
+			if(eggGame.numberOfLives <= 0){
+				gameOver();
+			}else{
+				updateLives(eggGame.numberOfLives);
+			}
+		}
+		
 	}
+	
 	public void showBrokenEgg(int position) {
 		
+		//reveal broken egg view and then fade it out
 		Animation eggFade = AnimationUtils.loadAnimation(this,
 				R.anim.fadeout);
 
@@ -265,7 +320,8 @@ public class MainActivity extends Activity {
 			break;
 		}
 		
-	}
+	}// end of showBrokenEgg()
+	
 	//show game over dialog
 	public void gameOver() {
 		
@@ -305,16 +361,16 @@ public class MainActivity extends Activity {
 		});
 		overDialog.show();
 		
-	}
+	}//end of gameOver()
 	
 	//moves the basket in eggGame class
-	public void moveBasket(String string, int i) {
-		eggGame.moveBasket(string, i);
-	}
+//	public void moveBasket(String string, int i) {
+//		eggGame.moveBasket(string, i);
+//	}
 	// get the position of the basket from egg game
-	public int getBasketPosition() {	
-		return eggGame.getBasketPosition();
-	}
+//	public int getBasketPosition() {	
+//		return eggGame.getBasketPosition();
+//	}
 	// updates lives text view
 	public void updateLives(int numberOfLives) {
 		livesView.setText(String.valueOf(numberOfLives));
@@ -336,8 +392,17 @@ public class MainActivity extends Activity {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
 				getResources().getDisplayMetrics());
 	}
+	public int convertToDp(int px){
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px,
+				getResources().getDisplayMetrics());
+	}
+	public int getDeviceWidth(){
+		return (int) this.getResources().getDisplayMetrics().widthPixels;  // displayMetrics.density;
+	}
+	public int getDeviceHeight(){
+		return (int) this.getResources().getDisplayMetrics().heightPixels;
+	}
 
-	
 
 	
 
