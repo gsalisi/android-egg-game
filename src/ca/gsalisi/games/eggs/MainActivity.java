@@ -24,32 +24,34 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	private EggGame eggGame;
+	private RelativeLayout rLayout;
+	private ImageView chickenViewLeft;
+	private ImageView chickenViewCenter;
+	private ImageView chickenViewRight;
+	private ImageView basketView;
+	private ImageView eggBrokenLeft;
+	private ImageView eggBrokenCenter;
+	private ImageView eggBrokenRight;
 	private TextView livesView;
 	private TextView bestScoreView;
-	private int bestScore;
 	private SharedPreferences pref;
 	private Dialog overDialog;
-	private boolean gameOverBool;
-	private int xBasketPosition;
 	
-	protected MyScrollView hScroll;
-	protected RelativeLayout rLayout;
 	protected ImageView eggView;
-	protected ImageView chickenViewLeft;
-	protected ImageView chickenViewCenter;
-	protected ImageView chickenViewRight;
-	protected ImageView basketView;
-	protected ImageView eggBrokenLeft;
-	protected ImageView eggBrokenCenter;
-	protected ImageView eggBrokenRight;
-	protected SensorManager sensorManager;
-	protected SensorEventListener eventListener;
-	protected Sensor rtnVectorSensor;
+	protected MyScrollView hScroll;
 	protected TextView scoreView;
 	protected TextView countdownView;
+	protected ImageButton reset_btn;
 	
-	public ImageButton reset_btn;
-
+	private boolean gameOverBool;
+	private int xBasketPosition;
+	private int bestScore;
+	
+	//protected SensorManager sensorManager;
+	//protected SensorEventListener eventListener;
+	//protected Sensor rtnVectorSensor;
+		
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -101,20 +103,7 @@ public class MainActivity extends Activity {
 		
 		
 	}//end onStop()
-//
-//	//restart a game when game is reopened
-//	@Override
-//	protected void onResume(){
-//		super.onResume();
-//		Log.d("GS", "Resume");
-//		
-//		//checks if game is at Game over phase
-//		if(gameOverBool){
-//			overDialog.dismiss();
-//		}
-//		eggGame.resetGame();
-//		
-//	}//end onResume()
+
 
 	// initialize rotation vector sensor -- saved here for future references 
 	// if i decide to implement two control methods as an option for players
@@ -293,7 +282,6 @@ public class MainActivity extends Activity {
 		}else{
 			
 			showBrokenEgg(position);
-
 			eggGame.numberOfLives--;
 			
 			if(eggGame.numberOfLives <= 0){

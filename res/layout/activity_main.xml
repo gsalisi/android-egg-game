@@ -148,8 +148,8 @@
 	<ca.gsalisi.games.eggs.MyScrollView
 	    android:id="@+id/hScrollView"
 	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_marginBottom="20dp"
+	    android:layout_height="75dp"
+
 	    android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:scrollbars="none" 
