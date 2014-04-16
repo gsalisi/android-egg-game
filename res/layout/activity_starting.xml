@@ -6,23 +6,28 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/bg_coop"
+    android:background="@drawable/bg_chicken_coop"
     tools:context=".StartingActivity" >
 
-    <TextView
+    <ImageView
         android:id="@+id/eggtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="78dp"
-        android:text="EGGS"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffff"
-        android:textSize="40sp" />
-	<View 
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+		android:src="@drawable/game_title"/>
+    <ImageView
+        android:id="@+id/frame"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/frame" />
+        
+    <View 
+        android:layout_width="120dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:background="#44ffffff"/>
@@ -32,24 +37,26 @@
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:src="@android:drawable/ic_media_play"
+        android:src="@drawable/ic_play"
  	/>
 
 	<View 
-       	android:layout_width="100dp"
-        android:layout_height="50dp"
+       	android:layout_width="80dp"
+        android:layout_height="40dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="20dp"
         android:background="#44ffffff"/>
     <ImageButton
         android:id="@+id/btn_soundfx"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="20dp"
         android:background="#00ffffff"
         android:src="@android:drawable/ic_lock_silent_mode_off" />
+
+    
 
 </RelativeLayout>
