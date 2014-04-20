@@ -1,68 +1,82 @@
 package ca.gsalisi.games.eggs;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 public class EggGame {
 
 	private MainActivity main;
-	private SensorManager sensorManager;
-	private SensorEventListener eventListener;
-	private Sensor rtnVectorSensor;
-	private Timer eggDelayTimer;
-	private Timer masterLvlTimer;
-	private TimerTask eggTimerTask;
+	
+//	private SensorManager sensorManager;
+//	private SensorEventListener eventListener;
+//	private Sensor rtnVectorSensor;
+	
 	private AnimationListener animListener;
 	private Animation eggAnimation;
-	private ImageView basketView;
-	
-	private int rightMargin;
-	private int leftMargin;
 	private int eggDelayTime;
-	private int rightBound = 118;
-	private int leftBound = -118;
+	private boolean animationStarted;
 	
-	public boolean timerRunning;
+	private Handler eggDelayHandler;
+	private Handler levelHandler;
+	private Handler eggIntervalHandler;
+	
+	private int changeCount;
+	private int prevPosition;
+	
+	private Runnable eggDelayRunnable;
+	private Runnable levelRunnable;
+	private Runnable eggIntervalRunnable;
+	
 	protected int level;
 	protected int scoreCount;
-	protected int xBasketPosition;
 	protected int numberOfLives;
 	protected CountDownTimer countdownTimer;
-	public boolean startedGame;
-	private boolean animationStarted;
+	
+	public boolean gameInSession;
+	public boolean handlerStarted;
 
+	
+
+	//Egg Game Constructor
 	public EggGame(MainActivity mainActivity) {
-		// constructor
+	
 		main = mainActivity;
-		sensorManager = main.sensorManager;
-		eventListener = main.eventListener;
-		rtnVectorSensor = main.rtnVectorSensor;
-		basketView = main.basketView;
 		scoreCount = 0;
-		rightMargin = main.convertToPixel(60) * (-1);
-		leftMargin = main.convertToPixel(60) * (-1); 
-		xBasketPosition = 0;
 		numberOfLives = 3;
+		handlerStarted = false;
+		gameInSession = false;
 
-	}
+//		sensorManager = main.sensorManager;
+//		eventListener = main.eventListener;
+//		rtnVectorSensor = main.rtnVectorSensor;
+		
+	}//end of constructor
 
+	//starts the game
 	protected void startGame() {
 		
-		startedGame = true;
+		//signals that the game started but no timers yet
+		gameInSession = true;
+		prevPosition = -1; //initiate variables
+		changeCount = 0;
+		
+		//put the basket in center
+		main.hScroll.post(new Runnable(){
+
+			@Override
+			public void run() {
+				main.hScroll.smoothScrollTo(main.convertToPixel(120),0);	
+			}
+			
+		});
+		
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
@@ -75,8 +89,8 @@ public class EggGame {
 			@Override
 			public void onFinish() {
 				main.countdownView.setVisibility(View.GONE);
-				if(startedGame){
-					initiateGameTimers();
+				if(gameInSession){
+					initiateGameHandlers();
 				}
 			}
 
@@ -90,263 +104,210 @@ public class EggGame {
 		};
 		countdownTimer.start();
 		
-		
 
 	}// end startGame
 	
-
-	private void initiateGameTimers() {
+	//initiate game handlers
+	private void initiateGameHandlers() {
 		
 		main.bringChickensToFront();
-		sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
+		//sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
-		eggDelayTime = 3500;
+		eggDelayTime = 1300;
 
-		final Handler handler = new Handler();
-		TimerTask levelTimerTask = new TimerTask() {
+		levelHandler = new Handler();
+		levelRunnable = new Runnable() {
 
 			@Override
 			public void run() {
-				handler.post(new Runnable() {
-
-					@Override
-					public void run() {
-						if(timerRunning){
-							if (level != 0 && eggDelayTime >= 500) {
-								eggDelayTimer.cancel();
-								eggDelayTimer.purge();
-								eggDelayTime -= 100;
-								Log.d("LevelTimerTask", "Cancelled existing eggtask!");
-							}
-							createEggFallTimer();
-							Log.d("LevelTimerTask", "Created createEggtask!");
-							eggDelayTimer.schedule(eggTimerTask, 1000, eggDelayTime);
-							level++;
-						}
-					}
-				});
-
+			
+				if (level != 0 && eggDelayTime >= 500) {
+					eggDelayTime -= 120;
+				}
+				if(level == 0){	
+					createEggFallHandler();		
+				}
+				if(level <= 50){
+					level++;
+				}
+				if(gameInSession){
+					levelHandler.postDelayed(levelRunnable, 10000);
+				}
 			}
-
 		};
-		masterLvlTimer = new Timer();
-		masterLvlTimer.schedule(levelTimerTask, 0, 10000);
+
+		levelHandler.post(levelRunnable);
 		
-		//set things that prevent crash 
-		//when game is stopped while counting down
+		//enable reset button when the handlers are running 
 		main.reset_btn.setEnabled(true);
-		timerRunning = true; 
+		handlerStarted = true;
 	}
+	// handler for individual egg fall event
+	protected void createEggFallHandler() {
 
-	protected void createEggFallTimer() {
-
-		eggDelayTimer = new Timer();
-		final Handler handler = new Handler();
-		eggTimerTask = new TimerTask() {
+		eggIntervalHandler = new Handler();
+		eggIntervalRunnable = new Runnable() {
 
 			@Override
 			public void run() {
-				handler.post(new Runnable() {
-
-					@Override
-					public void run() {
-						if(timerRunning){
-							Log.d("EggTimerTask", "Egg fall running!");
-							int position = generateRandomPosition();
-							startEggFall(position);
-						}
-					}
-				});
-
+//				Log.d("EggInterval Handler", "Egg fall called!");
+				int position = generateRandomPosition();
+				startEggFall(position);
+				if(gameInSession){
+					eggIntervalHandler.postDelayed(eggIntervalRunnable, eggDelayTime);
+				}
 			}
-
 		};
+		if(gameInSession){
+			eggIntervalHandler.post(eggIntervalRunnable);
+		}
+		
 
 	}// end startEggFallTimer
 
-
-
 	// Generates a random position for the egg fall
+	// 0 for left; 1 for center; 2 for right
 	protected int generateRandomPosition() {
+		
 		Random rand = new Random();
-		return rand.nextInt(3); // 0 for left; 1 for center; 2 for right
+		int pos = rand.nextInt(3);
+		
+		if(prevPosition == pos){
+			changeCount++;
+		}else{
+			changeCount = 0;
+		}
+		if(changeCount == 3){
+			if(pos == 2){
+				pos = rand.nextInt(1);
+			}else if(pos == 1){
+				pos = (rand.nextFloat() > 0.5) ? 2 : 0;
+			}else{
+				pos = (rand.nextFloat() > 0.5) ? 1 : 2;
+			}
+			
+			changeCount = 0;
+			
+		}
+		prevPosition = pos;
+		return pos;
+				
+	
 
 	}// end generateRandomPosition
 
+	//method that creates and animates the egg
 	protected void startEggFall(int position) {
-
-		final int pos = position;
-
-		final ImageView eggView = main.createEgg(pos);
 		
-		eggAnimation = AnimationUtils.loadAnimation(main,
-				R.anim.eggdrop);
-
-		eggView.startAnimation(eggAnimation);
-		animationStarted = true;
-		animListener = new AnimationListener() {
-
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				if(timerRunning){
-					eggView.setVisibility(View.GONE);
-					checkIfScored(pos);
-				}
-			}
+		//set to final so it's accessible inside runnable
+		final int pos = position;
+		
+		//create a random delay form 0 to 800 milliseconds 
+		//for every egg fall
+		Random r = new Random();
+		int delayEggFall = r.nextInt(200);
+		
+//		Log.d("Delay Egg Fall", "Egg fall delay: " +String.valueOf(delayEggFall));
+		eggDelayHandler = new Handler();
+		eggDelayRunnable = new Runnable(){
 
 			@Override
-			public void onAnimationRepeat(Animation animation) {
+			public void run() {
+				//shakes chicken
+				main.shakeChicken(pos);
+				
+				//creates the egg
+				final ImageView eggView = main.createEgg(pos);
+				
+				//set falling animation
+				eggAnimation = AnimationUtils.loadAnimation(main,
+						R.anim.eggdrop);
+				//set a random duration for egg fall ranging from 1.6-2 seconds
+				Random rand = new Random();
+				int duration = rand.nextInt(150) + 2500 - (level * 70);
+				eggAnimation.setDuration(duration);
+				
+				//start animation
+				eggView.startAnimation(eggAnimation);
+				animationStarted = true;
+				animListener = new AnimationListener() {
 
+					@Override
+					public void onAnimationEnd(Animation animation) {
+						if(handlerStarted){//condition prevents showing of broken egg
+							eggView.setVisibility(View.GONE);
+							main.checkIfScored(pos);
+							animationStarted = false;
+						}
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+
+					}
+
+					@Override
+					public void onAnimationStart(Animation animation) {
+
+					}
+
+				};
+				//set the listener
+				eggAnimation.setAnimationListener(animListener);
+						
 			}
-
-			@Override
-			public void onAnimationStart(Animation animation) {
-
-			}
-
+			
 		};
-		eggAnimation.setAnimationListener(animListener);
+		eggDelayHandler.postDelayed(eggDelayRunnable, delayEggFall);
+			
 
 	}// end startEggFall()
 
-	protected void checkIfScored(int position) {
-		
-		boolean caught = false;
-
-		switch (position) {
-		case 0:
-
-			if(xBasketPosition < main.convertToPixel(-90)){
-				caught = true;
-			}
-			
-			break;
-		case 1:
-			if(xBasketPosition < main.convertToPixel(30) 
-						&& xBasketPosition > main.convertToPixel(-30)){
-				caught = true;
-			}
-			break;
-		case 2:
-			if(xBasketPosition > main.convertToPixel(90)){
-				caught = true;
-			}
-			break;
-		default:
-			break;
-		}
-		
-		if(caught){
-			scoreCount += 1;
-			main.updateScore(scoreCount);
-			
-		}else{
-			main.showBrokenEgg(position);
-			numberOfLives--;
-			
-			if(numberOfLives <= 0){
-				main.gameOver();
-			}else{
-				main.updateLives(numberOfLives);
-			}
-		}
-		
-	}//end check if scored
-
-	public void moveBasket(String direction, int incrementValue) {
-
-		final int unitInc = main.convertToPixel(incrementValue);
-		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		basketLayout.width = main.convertToPixel(120);
-	
-
-		if (direction.equals("right")) {
-			if (xBasketPosition <= main.convertToPixel(rightBound)) {
-				if (xBasketPosition == 0 || xBasketPosition > 0) {
-					// 128dp is set to compensate on how big the nest is 
-					// see layout parameter rule!
-					rightMargin = main.convertToPixel(-60);
-					leftMargin += unitInc;
-					basketLayout.addRule(RelativeLayout.RIGHT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(leftMargin, 0, 0, 0);
-
-				} else {
-					rightMargin -= unitInc;
-					basketLayout.addRule(RelativeLayout.LEFT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(0, 0, rightMargin, 0);
-				}
-
-				xBasketPosition += unitInc;
-				basketView.setLayoutParams(basketLayout);
-			}
-		} else {
-
-			if (xBasketPosition >= main.convertToPixel(leftBound)) {
-
-				if (xBasketPosition == 0 || xBasketPosition > 0) {
-					leftMargin -= unitInc;
-					basketLayout.addRule(RelativeLayout.RIGHT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(leftMargin, 0, 0, 0);
-				} else {
-					// 128dp is set to compensate on how big the chicken center is 
-					// see layout parameter rule!
-					leftMargin = main.convertToPixel(-60);
-					rightMargin += unitInc;
-					basketLayout.addRule(RelativeLayout.LEFT_OF,
-							R.id.centerRef);
-					basketLayout.setMargins(0, 0, rightMargin, 0);
-				}
-				xBasketPosition -= unitInc;
-				basketView.setLayoutParams(basketLayout);
-			}
-		}
-
-	}// end of moveBasket()
-
-	public int getBasketPosition() {
-		return xBasketPosition;
-	}
-
+	//restarts the game
 	public void resetGame() {
 		Log.d("resetGame", "RESET");
+		
+		animationStarted = false;
 		numberOfLives = 3;
 		main.updateLives(numberOfLives);
 		scoreCount = 0;
 		main.updateScore(scoreCount);
 		
 		startGame();
-	}
+		
+	}//end resetGame();
 
+	//stops the game
 	public void stopGame() {
 		Log.d("stopGame", "STOPPED");
-		//important! this cancels remaining task scheduled on master timer
-		level = 0; 
+		
+		gameInSession = false;
+		
+		level = 0; //important! this prevents remaining task scheduled 
+					//on master timer and level timer to continue 
+		
 		cancelTimers();
+		
 		if(animationStarted){
+			Log.d("stopGame","animation cleared!");
 			eggAnimation.cancel();
 			main.eggView.clearAnimation();
 		}
-		sensorManager.unregisterListener(eventListener);
-		startedGame = false;
-		animationStarted = false;
-	}
+		//sensorManager.unregisterListener(eventListener);
+		
+		
+	}//end of stopGame()
 
+	//cancels timers
 	void cancelTimers() {
 		Log.d("cancelTimer", "TIMER CANCELLED");
-		timerRunning = false;
 		
-		masterLvlTimer.cancel();
-		eggDelayTimer.cancel();
-		
-		masterLvlTimer.purge();
-		eggDelayTimer.purge();
-	}
+		eggDelayHandler.removeCallbacks(eggDelayRunnable);
+		levelHandler.removeCallbacks(levelRunnable);
+		eggIntervalHandler.removeCallbacks(eggIntervalRunnable);
+		handlerStarted = false;
+	
+	}//end of cancelTimers()
 	
 }

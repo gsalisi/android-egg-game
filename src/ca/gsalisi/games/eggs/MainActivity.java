@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -19,52 +20,62 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
 	private EggGame eggGame;
+	private RelativeLayout rLayout;
+	private ImageView chickenViewLeft;
+	private ImageView chickenViewCenter;
+	private ImageView chickenViewRight;
+	private ImageView basketView;
+	private ImageView eggBrokenLeft;
+	private ImageView eggBrokenCenter;
+	private ImageView eggBrokenRight;
 	private TextView livesView;
 	private TextView bestScoreView;
-	private int bestScore;
 	private SharedPreferences pref;
 	private Dialog overDialog;
-	private boolean gameOverBool;
 	
-	protected RelativeLayout rLayout;
 	protected ImageView eggView;
-	protected ImageView chickenViewLeft;
-	protected ImageView chickenViewCenter;
-	protected ImageView chickenViewRight;
-	protected ImageView basketView;
-	protected ImageView eggBrokenLeft;
-	protected ImageView eggBrokenCenter;
-	protected ImageView eggBrokenRight;
-	protected SensorManager sensorManager;
-	protected SensorEventListener eventListener;
-	protected Sensor rtnVectorSensor;
+	protected MyScrollView hScroll;
 	protected TextView scoreView;
 	protected TextView countdownView;
+	protected ImageButton reset_btn;
 	
-	public ImageButton reset_btn;
+	private boolean gameOverBool;
+	private int xBasketPosition;
+	private int bestScore;
+	private Typeface typeface;
 
+	
+	//protected SensorManager sensorManager;
+	//protected SensorEventListener eventListener;
+	//protected Sensor rtnVectorSensor;
+		
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		initializeGameGraphics(); // initialize graphics for main view
-		initSensors(); // initialize sensors
+		//initSensors(); // initialize sensors
 		
+		//get existing high score
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
-		updateBest();
-		
-		gameOverBool = false;
-		
-		eggGame = new EggGame(MainActivity.this);
-		eggGame.startGame();
 
+		updateBest(); //update high score view
+		
+		gameOverBool = false; //signals the game is not in the game over state
+		
+		eggGame = new EggGame(MainActivity.this); //instantiate game class
+		eggGame.startGame();//starts the game
+
+		//reset button
 		reset_btn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -77,57 +88,55 @@ public class MainActivity extends Activity {
 
 	}// end OnCreate
 	
-
+	//cancel timers when the window is closed or when 
+	//back button or home button is pressed to prevent
+	//eggs falling even when out of game
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if(eggGame.timerRunning || gameOverBool){
-			eggGame.cancelTimers();
-			Log.d("GS", "On stop -- stoppedGame");
-		}
-		eggGame.startedGame = false;
-
-		Log.d("GS", "On stop ");
-		
-		
-	}
-
-	
-	@Override
-	protected void onResume(){
-		super.onResume();
-		Log.d("GS", "Resume");
-		
-		if(gameOverBool){
+		if(!gameOverBool){
+			try{
+				eggGame.stopGame();
+				Log.d("On Stop", "Called cancel timers");
+			} catch(Exception e) {
+				Log.d("On Stop", "exception caught");
+			}
+		}else{
 			overDialog.dismiss();
 		}
+		finish();
 		
-		eggGame.resetGame();
-	}
+		
+	}//end onStop()
 
-	// initialize rotation vector sensor
-	protected void initSensors() {
 
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		rtnVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
-		eventListener = new MySensorEventListener(this);
-	}
+	// initialize rotation vector sensor -- saved here for future references 
+	// if i decide to implement two control methods as an option for players
+	
+//	protected void initSensors() {
+//
+//		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+//		rtnVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+//		eventListener = new MySensorEventListener(this);
+//	}
+	
 	// create views
 	protected void initializeGameGraphics() {
-
+		
+		typeface = Typeface.createFromAsset(this.getAssets(),
+		        "fonts/roostheavy.ttf");
+		
 		rLayout = (RelativeLayout) findViewById(R.id.rLayout);
-		// ---- INITIALIZE CHICKENS --- //
+		
+		// ---- create chicken references --- //
 
 		chickenViewLeft = (ImageView) findViewById(R.id.chickenLeft);
 		chickenViewCenter = (ImageView) findViewById(R.id.chickenCenter);
 		chickenViewRight = (ImageView) findViewById(R.id.chickenRight);
 				
 		//---- Initialize broken eggs ----//
-		
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		//needs to create a function to make the code better and shorter!!
+		RelativeLayout.LayoutParams layoutParams = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
 		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 		layoutParams.setMargins(convertToPixel(10), 0, 0, convertToPixel(13));
@@ -138,10 +147,7 @@ public class MainActivity extends Activity {
 		eggBrokenLeft.setLayoutParams(layoutParams);
 		
 		
-		RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		RelativeLayout.LayoutParams layoutParams1 = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
 		layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL,
 				RelativeLayout.TRUE);
@@ -152,10 +158,7 @@ public class MainActivity extends Activity {
 		eggBrokenCenter.setImageResource(R.drawable.egg_broken);
 		eggBrokenCenter.setLayoutParams(layoutParams1);
 	
-		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		RelativeLayout.LayoutParams layoutParams2 = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
 		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		layoutParams2.setMargins(0, 0, convertToPixel(10), convertToPixel(13));
@@ -173,49 +176,55 @@ public class MainActivity extends Activity {
 		eggBrokenCenter.setVisibility(View.INVISIBLE);
 		eggBrokenRight.setVisibility(View.INVISIBLE);
 
-		// ----  create basket view ------//
+		// ----------------  create basket view -------------------//
 
-		RelativeLayout.LayoutParams basketLayout = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		basketLayout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		basketLayout.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		basketLayout.width = convertToPixel(120);
-
-		basketView = new ImageView(this);
-		basketView.setImageResource(R.drawable.nest);
-		basketView.setLayoutParams(basketLayout);
-		rLayout.addView(basketView);
-
+		hScroll = (MyScrollView) findViewById(R.id.hScrollView);
+		basketView = (ImageView) findViewById(R.id.basketView);
+		
+		basketView.getLayoutParams().width = getDeviceWidth()*2 - convertToPixel(170);
+		
+		//-------------- create view references -----------------//
 
 		livesView = (TextView) findViewById(R.id.lives_view);
 		countdownView = (TextView) findViewById(R.id.countdown_view);
 		scoreView = (TextView) findViewById(R.id.score_view);
 		reset_btn = (ImageButton) findViewById(R.id.btn_reset);
 		bestScoreView = (TextView) findViewById(R.id.best_view);
+		TextView livesLabel = (TextView) findViewById(R.id.lives_label);
+		
+		livesLabel.setTypeface(typeface);
+		countdownView.setTypeface(typeface);
+		livesView.setTypeface(typeface);
+		scoreView.setTypeface(typeface);
+		bestScoreView.setTypeface(typeface);
+		
 	
 	}// end initializeGraphics()
 
+	//set the chicken views to the front
 	void bringChickensToFront() {
 
 		chickenViewLeft.bringToFront();
 		chickenViewCenter.bringToFront();
 		chickenViewRight.bringToFront();
 
+	}//end of chickensToFront()
+	private void bringBasketToFront() {
+		// TODO Auto-generated method stub
+		hScroll.bringToFront();
 	}
 
+	//creates a new egg view in the required position
 	public ImageView createEgg(int position) {
+		
+		RelativeLayout.LayoutParams layoutParams = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_TOP);
+		
 
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-
-		switch (position) {
+		switch (position) {//0 for left; 1 for center; 2 for right
 		case 0:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-			layoutParams.setMargins(convertToPixel(25), convertToPixel(25), 0, 0);
-			layoutParams.height = convertToPixel(48);
+			layoutParams.setMargins(convertToPixel(25), convertToPixel(60), 0, 0);
+			layoutParams.height = convertToPixel(40);
 			
 
 			break;
@@ -223,28 +232,89 @@ public class MainActivity extends Activity {
 		
 			layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
 					RelativeLayout.TRUE);
-			layoutParams.setMargins(0, convertToPixel(25), 0, 0);
-			layoutParams.height = convertToPixel(48);
+			layoutParams.setMargins(0, convertToPixel(60), 0, 0);
+			layoutParams.height = convertToPixel(40);
 			break;
 		case 2:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-			layoutParams.setMargins(0, convertToPixel(25), convertToPixel(25), 0);
-			layoutParams.height = convertToPixel(48);
+			layoutParams.setMargins(0, convertToPixel(60), convertToPixel(25), 0);
+			layoutParams.height = convertToPixel(40);
 			break;
 		default:
 			break;
 		}
 
 		eggView = new ImageView(this);
-		eggView.setImageResource(R.drawable.egg_test);
+		eggView.setImageResource(R.drawable.egg_white);
 		eggView.setLayoutParams(layoutParams);
 
 		rLayout.addView(eggView);
+		bringChickensToFront();
+		bringBasketToFront();
 
 		return eggView;
+		
+	}//end of createEgg()
+
+	private LayoutParams getMyLayoutParams(int rule) {
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		layoutParams.addRule(rule);
+		return layoutParams;
 	}
+
+	//check if basket is in the right position
+	//if it is then we add score, if not we subtract from lives
+	public void checkIfScored(int position) {
+		boolean caught = false;
+		
+		xBasketPosition = hScroll.getScrollX();
+		
+		switch (position) {
+		case 0:
+			
+			if(xBasketPosition > convertToPixel(210)){
+				caught = true;
+			}
+			
+			break;
+		case 1:
+			if(xBasketPosition < convertToPixel(150) 
+						&& xBasketPosition > convertToPixel(90)){
+				caught = true;
+			}
+			break;
+		case 2:
+			if(xBasketPosition < convertToPixel(40)){
+				caught = true;
+			}
+			break;
+		default:
+			break;
+		}
+		
+		if(caught){
+			eggGame.scoreCount += 1;
+			updateScore(eggGame.scoreCount);
+			
+		}else{
+			
+			showBrokenEgg(position);
+			eggGame.numberOfLives--;
+			
+			if(eggGame.numberOfLives <= 0){
+				gameOver();
+			}else{
+				updateLives(eggGame.numberOfLives);
+			}
+		}
+		
+	}//end of checkIfScored()
+	
 	public void showBrokenEgg(int position) {
 		
+		//reveal broken egg view and then fade it out
 		Animation eggFade = AnimationUtils.loadAnimation(this,
 				R.anim.fadeout);
 
@@ -265,13 +335,14 @@ public class MainActivity extends Activity {
 			break;
 		}
 		
-	}
+	}// end of showBrokenEgg()
+	
 	//show game over dialog
 	public void gameOver() {
 		
 		gameOverBool = true;
 		
-		if(eggGame.scoreCount > bestScore){
+		if(eggGame.scoreCount > bestScore){//save high score if it is beaten
 			bestScore = eggGame.scoreCount;
 			pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 			Editor editor = pref.edit();
@@ -280,8 +351,8 @@ public class MainActivity extends Activity {
 			updateBest();
 		}
 		eggGame.stopGame();
-		//bringChickensToFront();
 		
+		//creates dialog
 		overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
 		overDialog.setCancelable(false);
@@ -298,23 +369,16 @@ public class MainActivity extends Activity {
 		restartbtn.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				eggGame.resetGame();
 				overDialog.dismiss();
+				eggGame.resetGame();
 				gameOverBool = false;
 			}
 		});
 		overDialog.show();
 		
-	}
+	}//end of gameOver()
 	
-	//moves the basket in eggGame class
-	public void moveBasket(String string, int i) {
-		eggGame.moveBasket(string, i);
-	}
-	// get the position of the basket from egg game
-	public int getBasketPosition() {	
-		return eggGame.getBasketPosition();
-	}
+
 	// updates lives text view
 	public void updateLives(int numberOfLives) {
 		livesView.setText(String.valueOf(numberOfLives));
@@ -336,8 +400,35 @@ public class MainActivity extends Activity {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
 				getResources().getDisplayMetrics());
 	}
+	public int convertToDp(int px){
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px,
+				getResources().getDisplayMetrics());
+	}
+	public int getDeviceWidth(){
+		return (int) this.getResources().getDisplayMetrics().widthPixels;  // displayMetrics.density;
+	}
+	public int getDeviceHeight(){
+		return (int) this.getResources().getDisplayMetrics().heightPixels;
+	}
 
-	
+	public void shakeChicken(int pos) {
+		Animation anim = AnimationUtils.loadAnimation(this, R.anim.shake);
+		
+		switch (pos) {
+		case 0:
+			chickenViewLeft.startAnimation(anim);
+			break;
+		case 1:
+			chickenViewCenter.startAnimation(anim);
+			break;
+		case 2:
+			chickenViewRight.startAnimation(anim);
+			break;
+		default:
+			break;
+		}
+	}
+
 
 	
 

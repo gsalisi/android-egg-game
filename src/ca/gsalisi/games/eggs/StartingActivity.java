@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -23,6 +24,14 @@ public class StartingActivity extends Activity {
 		Log.d("GS", "On first activity");
 		ImageView playButton = (ImageView) findViewById(R.id.btn_play);
 		
+		int widthPx = (int) this.getResources().getDisplayMetrics().widthPixels;
+		int heightPx = (int) this.getResources().getDisplayMetrics().heightPixels;
+		DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics(); 
+		float widthDp =  (int) displayMetrics.widthPixels/ displayMetrics.density;
+		float heightDp =  (int) displayMetrics.heightPixels/ displayMetrics.density;
+		
+		Log.d("widthPx: "+String.valueOf(widthPx),"heightPx: "+String.valueOf(heightPx));
+		Log.d("widthDP: "+String.valueOf(widthDp),"heightDP: "+String.valueOf(heightDp)); 
 		playButton.setOnClickListener(new OnClickListener() {
 
 			@Override
