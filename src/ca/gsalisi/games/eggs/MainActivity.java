@@ -51,9 +51,7 @@ public class MainActivity extends Activity {
 	private Typeface typeface;
 
 	
-	//protected SensorManager sensorManager;
-	//protected SensorEventListener eventListener;
-	//protected Sensor rtnVectorSensor;
+
 		
 	
 	@Override
