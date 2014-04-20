@@ -109,7 +109,7 @@ public class EggGame {
 		//sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
-		eggDelayTime = 2500;
+		eggDelayTime = 1500;
 
 		levelHandler = new Handler();
 		levelRunnable = new Runnable() {
@@ -118,9 +118,11 @@ public class EggGame {
 			public void run() {
 			
 				if (level != 0 && eggDelayTime >= 800) {
-					eggDelayTime -= 100;
-					level++;
-					Log.d("LevelRunnable", "Increased Speed!");
+					eggDelayTime -= 120;
+					if(level <= 20){
+						level++;
+					}
+					Log.d("LevelRunnable", "Increased Speed! Level:" + String.valueOf(level));
 				}
 				if(level == 0){
 						
@@ -129,7 +131,7 @@ public class EggGame {
 					Log.d("LevelRunnable", "Created createEggHandler!");	
 				}
 				if(gameInSession){
-					levelHandler.postDelayed(levelRunnable, 8000);
+					levelHandler.postDelayed(levelRunnable, 10000);
 				}
 			}
 		};
@@ -179,7 +181,7 @@ public class EggGame {
 		//create a random delay form 0 to 800 milliseconds 
 		//for every egg fall
 		Random r = new Random();
-		int delayEggFall = r.nextInt(800);
+		int delayEggFall = r.nextInt(200);
 		
 		Log.d("Delay Egg Fall", "Egg fall delay: " +String.valueOf(delayEggFall));
 		eggDelayHandler = new Handler();
@@ -198,7 +200,7 @@ public class EggGame {
 						R.anim.eggdrop);
 				//set a random duration for egg fall ranging from 1.6-2 seconds
 				Random rand = new Random();
-				int duration = rand.nextInt(400) + 1600;
+				int duration = rand.nextInt(150) + 2500 - (level * 100);
 				eggAnimation.setDuration(duration);
 				
 				//start animation

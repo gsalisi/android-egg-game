@@ -65,6 +65,7 @@ public class MainActivity extends Activity {
 		//get existing high score
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
+
 		updateBest(); //update high score view
 		
 		gameOverBool = false; //signals the game is not in the game over state
@@ -268,19 +269,19 @@ public class MainActivity extends Activity {
 		switch (position) {
 		case 0:
 			
-			if(xBasketPosition > convertToPixel(220)){
+			if(xBasketPosition > convertToPixel(210)){
 				caught = true;
 			}
 			
 			break;
 		case 1:
-			if(xBasketPosition < convertToPixel(140) 
-						&& xBasketPosition > convertToPixel(100)){
+			if(xBasketPosition < convertToPixel(150) 
+						&& xBasketPosition > convertToPixel(90)){
 				caught = true;
 			}
 			break;
 		case 2:
-			if(xBasketPosition < convertToPixel(30)){
+			if(xBasketPosition < convertToPixel(35)){
 				caught = true;
 			}
 			break;

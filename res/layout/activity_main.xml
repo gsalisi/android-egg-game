@@ -27,7 +27,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="0dp"
-        android:src="@drawable/chicken" />
+        android:src="@drawable/asset_chicken" />
 
     <ImageView
         android:id="@+id/chickenCenter"
@@ -35,7 +35,7 @@
         android:layout_height="120dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/chicken" />
+        android:src="@drawable/asset_chicken" />
 
     <ImageView
         android:id="@+id/chickenRight"
@@ -44,7 +44,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="0dp"
-        android:src="@drawable/chicken" />
+        android:src="@drawable/asset_chicken" />
 <!-- saved just for debugging purposes
      <TextView
         android:id="@+id/textView1"
@@ -66,79 +66,80 @@
         android:textAppearance="?android:attr/textAppearanceMedium" /> -->
 
  
-	<ImageView
-	    android:id="@+id/imageView1"
-	    android:layout_width="500dp"
-	    android:layout_height="200dp"
-	    android:alpha="0.9"
-	    android:layout_centerHorizontal="true"
+	
+	<RelativeLayout
+	    android:id="@+id/layout_panel"
+	    android:layout_width="match_parent"
+	    android:layout_height="100dp"
 	    android:layout_centerVertical="true"
-	    android:src="@android:drawable/dialog_holo_dark_frame" />
-    <TextView
-        android:id="@+id/score_view"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="28dp"
-        android:gravity="center"
-        android:text="Score: 0"
-        android:textColor="#ffffff"
-        android:textSize="22sp" />
-
-	<TextView
-	    android:id="@+id/best_view"
-	    android:layout_width="120dp"
-	    android:layout_height="40dp"
-	    android:layout_alignParentRight="true"
-	    android:layout_centerVertical="true"
-	    android:layout_marginRight="28dp"
-	    android:gravity="center"
-	    android:text="Best: X"
-	    android:textColor="#ffffff"
-	    android:textSize="22sp" />
-
-	<ImageButton
-	    android:id="@+id/btn_reset"
-	    android:layout_width="80dp"
-	    android:layout_height="80dp"
-	    android:layout_alignBottom="@+id/imageView1"
-	    android:layout_centerHorizontal="true"
-	    android:background="#22000000"
-	    android:src="@android:drawable/ic_menu_rotate" />
-
-
-	<TextView
-	    android:id="@+id/lives_view"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_centerHorizontal="true"
-	    android:layout_centerVertical="true"
-	    android:textSize="60sp"
-	    android:textColor="#ffffff"
-	    android:text="3" />
+		android:layout_centerHorizontal="true" >
+		<ImageView
+		    android:id="@+id/imageView1"
+	    	android:layout_width="500dp"
+	    	android:layout_height="200dp"
+	    	android:alpha="0.9"
+	    	android:layout_centerHorizontal="true"
+	    	android:layout_centerVertical="true"
+	    	android:background="@android:drawable/dialog_holo_dark_frame" />
+    	<TextView
+	        android:id="@+id/score_view"
+	        android:layout_width="120dp"
+	        android:layout_height="40dp"
+	        android:layout_alignParentLeft="true"
+	        android:layout_centerVertical="true"
+	        android:layout_marginLeft="18dp"
+	        android:gravity="center"
+	        android:text="Score: 0"
+	        android:textColor="#ffffff"
+	        android:textSize="22sp" />
+	
+		<TextView
+		    android:id="@+id/best_view"
+		    android:layout_width="120dp"
+		    android:layout_height="40dp"
+		    android:layout_alignParentRight="true"
+		    android:layout_centerVertical="true"
+		    android:layout_marginRight="18dp"
+		    android:gravity="center"
+		    android:text="Best: X"
+		    android:textColor="#ffffff"
+		    android:textSize="22sp" />
+	
+		<TextView
+		    android:id="@+id/lives_view"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerHorizontal="true"
+		    android:layout_alignParentBottom="true"
+		    android:textSize="60sp"
+		    android:textColor="#ffffff"
+		    android:text="3" />
+		
+		<TextView
+		    android:id="@+id/lives_label"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerHorizontal="true"
+			android:layout_above="@id/lives_view"
+		    android:textSize="10sp"
+		    android:textColor="#ffffff"
+		    android:text="Lives" 
+		    />
+	
+		
+	</RelativeLayout>
 	
 	<TextView
-	    android:id="@+id/lives_label"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_centerHorizontal="true"
-		android:layout_above="@id/lives_view"
-	    android:textSize="10sp"
-	    android:textColor="#ffffff"
-	    android:text="Lives" 
-	    />
-
-	<TextView
-	    android:id="@+id/countdown_view"
-	    android:layout_width="match_parent"
-	    android:layout_height="fill_parent"
+		android:id="@+id/countdown_view"
+		android:layout_width="match_parent"
+		android:layout_height="fill_parent"
 	    android:layout_alignParentTop="true"
 	    android:layout_marginTop="50dp"
 	    android:gravity="center"
 	    android:text="3"
 	    android:textColor="#ffffff"
-	    android:textSize="300sp" /> 
+		android:textSize="300sp" />
+	
 
 	<ca.gsalisi.games.eggs.MyScrollView
 	    android:id="@+id/hScrollView"
@@ -165,5 +166,15 @@
 	        
 	    </LinearLayout>
 	</ca.gsalisi.games.eggs.MyScrollView>
+
+	<ImageButton
+	    android:id="@+id/btn_reset"
+	    android:layout_width="80dp"
+	    android:layout_height="80dp"
+	    android:layout_below="@+id/layout_panel"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginTop="13dp"
+	    android:background="#00000000"
+	    android:src="@android:drawable/ic_menu_rotate" />
 
 </RelativeLayout>
