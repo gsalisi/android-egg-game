@@ -20,6 +20,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -134,10 +135,7 @@ public class MainActivity extends Activity {
 				
 		//---- Initialize broken eggs ----//
 		//needs to create a function to make the code better and shorter!!
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		RelativeLayout.LayoutParams layoutParams = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
 		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 		layoutParams.setMargins(convertToPixel(10), 0, 0, convertToPixel(13));
@@ -148,10 +146,7 @@ public class MainActivity extends Activity {
 		eggBrokenLeft.setLayoutParams(layoutParams);
 		
 		
-		RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		RelativeLayout.LayoutParams layoutParams1 = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
 		layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL,
 				RelativeLayout.TRUE);
@@ -162,10 +157,7 @@ public class MainActivity extends Activity {
 		eggBrokenCenter.setImageResource(R.drawable.egg_broken);
 		eggBrokenCenter.setLayoutParams(layoutParams1);
 	
-		RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		RelativeLayout.LayoutParams layoutParams2 = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
 		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 		layoutParams2.setMargins(0, 0, convertToPixel(10), convertToPixel(13));
@@ -216,19 +208,21 @@ public class MainActivity extends Activity {
 		chickenViewRight.bringToFront();
 
 	}//end of chickensToFront()
+	private void bringBasketToFront() {
+		// TODO Auto-generated method stub
+		hScroll.bringToFront();
+	}
 
 	//creates a new egg view in the required position
 	public ImageView createEgg(int position) {
 		
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+		RelativeLayout.LayoutParams layoutParams = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_TOP);
+		
 
 		switch (position) {//0 for left; 1 for center; 2 for right
 		case 0:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-			layoutParams.setMargins(convertToPixel(25), convertToPixel(52), 0, 0);
+			layoutParams.setMargins(convertToPixel(25), convertToPixel(60), 0, 0);
 			layoutParams.height = convertToPixel(40);
 			
 
@@ -237,12 +231,12 @@ public class MainActivity extends Activity {
 		
 			layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
 					RelativeLayout.TRUE);
-			layoutParams.setMargins(0, convertToPixel(52), 0, 0);
+			layoutParams.setMargins(0, convertToPixel(60), 0, 0);
 			layoutParams.height = convertToPixel(40);
 			break;
 		case 2:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-			layoutParams.setMargins(0, convertToPixel(52), convertToPixel(25), 0);
+			layoutParams.setMargins(0, convertToPixel(60), convertToPixel(25), 0);
 			layoutParams.height = convertToPixel(40);
 			break;
 		default:
@@ -254,11 +248,21 @@ public class MainActivity extends Activity {
 		eggView.setLayoutParams(layoutParams);
 
 		rLayout.addView(eggView);
+		bringChickensToFront();
+		bringBasketToFront();
 
 		return eggView;
 		
 	}//end of createEgg()
-	
+
+	private LayoutParams getMyLayoutParams(int rule) {
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT);
+		layoutParams.addRule(rule);
+		return layoutParams;
+	}
+
 	//check if basket is in the right position
 	//if it is then we add score, if not we subtract from lives
 	public void checkIfScored(int position) {
@@ -281,7 +285,7 @@ public class MainActivity extends Activity {
 			}
 			break;
 		case 2:
-			if(xBasketPosition < convertToPixel(35)){
+			if(xBasketPosition < convertToPixel(40)){
 				caught = true;
 			}
 			break;

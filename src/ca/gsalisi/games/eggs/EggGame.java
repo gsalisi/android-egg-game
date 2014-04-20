@@ -117,21 +117,21 @@ public class EggGame {
 			@Override
 			public void run() {
 			
-				if (level != 0 && eggDelayTime >= 800) {
+				if (level != 0 && eggDelayTime >= 200) {
 					eggDelayTime -= 120;
-					if(level <= 20){
+					if(level <= 50){
 						level++;
 					}
 					Log.d("LevelRunnable", "Increased Speed! Level:" + String.valueOf(level));
 				}
 				if(level == 0){
-						
+					createGoldenEggHandler();	
 					createEggFallHandler();
 					level++;
 					Log.d("LevelRunnable", "Created createEggHandler!");	
 				}
 				if(gameInSession){
-					levelHandler.postDelayed(levelRunnable, 10000);
+					levelHandler.postDelayed(levelRunnable, 8000);
 				}
 			}
 		};
@@ -200,7 +200,7 @@ public class EggGame {
 						R.anim.eggdrop);
 				//set a random duration for egg fall ranging from 1.6-2 seconds
 				Random rand = new Random();
-				int duration = rand.nextInt(150) + 2500 - (level * 100);
+				int duration = rand.nextInt(150) + 2500 - (level * 110);
 				eggAnimation.setDuration(duration);
 				
 				//start animation
