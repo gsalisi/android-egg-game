@@ -14,10 +14,6 @@ public class EggGame {
 
 	private MainActivity main;
 	
-//	private SensorManager sensorManager;
-//	private SensorEventListener eventListener;
-//	private Sensor rtnVectorSensor;
-	
 	private AnimationListener animListener;
 	private Animation eggAnimation;
 	private int eggDelayTime;
@@ -53,9 +49,6 @@ public class EggGame {
 		handlerStarted = false;
 		gameInSession = false;
 
-//		sensorManager = main.sensorManager;
-//		eventListener = main.eventListener;
-//		rtnVectorSensor = main.rtnVectorSensor;
 		
 	}//end of constructor
 
