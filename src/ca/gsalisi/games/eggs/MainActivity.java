@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
 	private int xBasketPosition;
 	private int bestScore;
 	private Typeface typeface;
+
 	
 	//protected SensorManager sensorManager;
 	//protected SensorEventListener eventListener;
