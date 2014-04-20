@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		initializeGameGraphics(); // initialize graphics for main view
+		//initSensors(); // initialize sensors
 		
 		//get existing high score
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
