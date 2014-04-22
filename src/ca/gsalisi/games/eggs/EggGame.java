@@ -1,6 +1,8 @@
 package ca.gsalisi.games.eggs;
 
 import java.util.Random;
+
+import android.media.SoundPool;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
@@ -13,7 +15,7 @@ import android.widget.ImageView;
 public class EggGame {
 
 	private MainActivity main;
-	
+	private AnimationListener animGoldListener;
 	private AnimationListener animWhiteListener;
 	private Animation eggAnimation;
 	private int eggDelayTime;
@@ -38,9 +40,6 @@ public class EggGame {
 	public boolean gameInSession;
 	public boolean handlerStarted;
 
-	private AnimationListener animGoldListener;
-
-	
 
 	//Egg Game Constructor
 	public EggGame(MainActivity mainActivity) {
@@ -284,14 +283,11 @@ public class EggGame {
 
 			@Override
 			public void onAnimationRepeat(Animation arg0) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public void onAnimationStart(Animation arg0) {
-				// TODO Auto-generated method stub
-				
+
 			}
 			
 		};
@@ -324,7 +320,7 @@ public class EggGame {
 		gameInSession = false;
 		
 		level = 0; //important! this prevents remaining task scheduled 
-					//on master timer and level timer to continue 
+					//on handlers to continue 
 		
 		cancelTimers();
 		

@@ -1,5 +1,7 @@
 package ca.gsalisi.games.eggs;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
@@ -49,18 +51,21 @@ public class MainActivity extends Activity {
 	private int xBasketPosition;
 	private int bestScore;
 	private Typeface typeface;
-
 	
+	protected SoundPool soundPool;
+	protected int[] soundIds = new int[5];
+	private boolean soundsOn;
 
-		
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		initializeGameGraphics(); // initialize graphics for main view
+		initializeSoundFx();
 		//initSensors(); // initialize sensors
+		soundsOn = true;
 		
 		//get existing high score
 		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
@@ -85,7 +90,8 @@ public class MainActivity extends Activity {
 		});
 
 	}// end OnCreate
-	
+
+
 	//cancel timers when the window is closed or when 
 	//back button or home button is pressed to prevent
 	//eggs falling even when out of game
@@ -94,6 +100,8 @@ public class MainActivity extends Activity {
 		super.onStop();
 		if(!gameOverBool){
 			try{
+				soundPool.autoPause();
+				soundPool.release();
 				eggGame.stopGame();
 				Log.d("On Stop", "Called cancel timers");
 			} catch(Exception e) {
@@ -118,6 +126,7 @@ public class MainActivity extends Activity {
 //		eventListener = new MySensorEventListener(this);
 //	}
 	
+	
 	// create views
 	protected void initializeGameGraphics() {
 		
@@ -127,7 +136,6 @@ public class MainActivity extends Activity {
 		rLayout = (RelativeLayout) findViewById(R.id.rLayout);
 		
 		// ---- create chicken references --- //
-
 		chickenViewLeft = (ImageView) findViewById(R.id.chickenLeft);
 		chickenViewCenter = (ImageView) findViewById(R.id.chickenCenter);
 		chickenViewRight = (ImageView) findViewById(R.id.chickenRight);
@@ -211,7 +219,18 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		hScroll.bringToFront();
 	}
+	//initialize sound effects
+	private void initializeSoundFx() {
 
+		soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+
+		soundIds[0] = soundPool.load(this, R.raw.laying_hen_white, 1);
+		soundIds[1] = soundPool.load(this, R.raw.laying_hen_gold, 1);
+		soundIds[2] = soundPool.load(this, R.raw.egg_dropped, 1);
+		soundIds[3] = soundPool.load(this, R.raw.score, 1);
+		soundIds[4] = soundPool.load(this, R.raw.score_2, 1);
+		
+	}
 	//creates a new egg view in the required position
 	public ImageView createEgg(int position, String color) {
 		
@@ -245,18 +264,23 @@ public class MainActivity extends Activity {
 		eggView = new ImageView(this);
 		if(color=="white"){
 			eggView.setImageResource(R.drawable.egg_white);
+			playSoundEffect(0, 50);
 		}else{
 			eggView.setImageResource(R.drawable.egg_gold);
+			playSoundEffect(1, 50);
 		}
 		eggView.setLayoutParams(layoutParams);
 
 		rLayout.addView(eggView);
 		bringChickensToFront();
 		bringBasketToFront();
-
+		
 		return eggView;
 		
 	}//end of createEgg()
+
+
+
 
 	private LayoutParams getMyLayoutParams(int rule) {
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -299,10 +323,17 @@ public class MainActivity extends Activity {
 		if(caught){
 			eggGame.scoreCount += scoreInc;
 			updateScore(eggGame.scoreCount);
-			
+			if(scoreInc == 1){
+				playSoundEffect(3, 80);
+			}else{
+				playSoundEffect(4, 80);
+			}
+						
 		}else{
 			
 			showBrokenEgg(position);
+			playSoundEffect(2, 80);
+
 			eggGame.numberOfLives--;
 			
 			if(eggGame.numberOfLives <= 0){
@@ -430,7 +461,16 @@ public class MainActivity extends Activity {
 			break;
 		}
 	}
-
+	private void playSoundEffect(int id, int vol) {
+		
+		if(soundsOn){
+			if(id == 2){
+				soundPool.play(soundIds[id], vol, vol, 1, 0, (float) 0.7);
+			}else{
+				soundPool.play(soundIds[id], vol, vol, 1, 0, 1);
+			}
+		}
+	}
 
 	
 
