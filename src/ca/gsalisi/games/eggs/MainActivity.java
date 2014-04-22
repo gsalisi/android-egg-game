@@ -213,7 +213,7 @@ public class MainActivity extends Activity {
 	}
 
 	//creates a new egg view in the required position
-	public ImageView createEgg(int position) {
+	public ImageView createEgg(int position, String color) {
 		
 		RelativeLayout.LayoutParams layoutParams = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_TOP);
 		
@@ -222,7 +222,7 @@ public class MainActivity extends Activity {
 		case 0:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 			layoutParams.setMargins(convertToPixel(25), convertToPixel(60), 0, 0);
-			layoutParams.height = convertToPixel(40);
+			layoutParams.height = convertToPixel(35);
 			
 
 			break;
@@ -231,19 +231,23 @@ public class MainActivity extends Activity {
 			layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
 					RelativeLayout.TRUE);
 			layoutParams.setMargins(0, convertToPixel(60), 0, 0);
-			layoutParams.height = convertToPixel(40);
+			layoutParams.height = convertToPixel(35);
 			break;
 		case 2:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
 			layoutParams.setMargins(0, convertToPixel(60), convertToPixel(25), 0);
-			layoutParams.height = convertToPixel(40);
+			layoutParams.height = convertToPixel(35);
 			break;
 		default:
 			break;
 		}
 
 		eggView = new ImageView(this);
-		eggView.setImageResource(R.drawable.egg_white);
+		if(color=="white"){
+			eggView.setImageResource(R.drawable.egg_white);
+		}else{
+			eggView.setImageResource(R.drawable.egg_gold);
+		}
 		eggView.setLayoutParams(layoutParams);
 
 		rLayout.addView(eggView);
@@ -264,7 +268,7 @@ public class MainActivity extends Activity {
 
 	//check if basket is in the right position
 	//if it is then we add score, if not we subtract from lives
-	public void checkIfScored(int position) {
+	public void checkIfScored(int position, int scoreInc) {
 		boolean caught = false;
 		
 		xBasketPosition = hScroll.getScrollX();
@@ -293,7 +297,7 @@ public class MainActivity extends Activity {
 		}
 		
 		if(caught){
-			eggGame.scoreCount += 1;
+			eggGame.scoreCount += scoreInc;
 			updateScore(eggGame.scoreCount);
 			
 		}else{

@@ -14,7 +14,7 @@ public class EggGame {
 
 	private MainActivity main;
 	
-	private AnimationListener animListener;
+	private AnimationListener animWhiteListener;
 	private Animation eggAnimation;
 	private int eggDelayTime;
 	private boolean animationStarted;
@@ -37,6 +37,8 @@ public class EggGame {
 	
 	public boolean gameInSession;
 	public boolean handlerStarted;
+
+	private AnimationListener animGoldListener;
 
 	
 
@@ -107,7 +109,7 @@ public class EggGame {
 		//sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
 
 		level = 0;
-		eggDelayTime = 1300;
+		eggDelayTime = 1400;
 
 		levelHandler = new Handler();
 		levelRunnable = new Runnable() {
@@ -115,11 +117,11 @@ public class EggGame {
 			@Override
 			public void run() {
 			
-				if (level != 0 && eggDelayTime >= 500) {
-					eggDelayTime -= 120;
+				if (level != 0 && eggDelayTime >= 300) {
+					eggDelayTime -= 100;
 				}
 				if(level == 0){	
-					createEggFallHandler();		
+					createEggFallHandler();	
 				}
 				if(level <= 50){
 					level++;
@@ -136,6 +138,7 @@ public class EggGame {
 		main.reset_btn.setEnabled(true);
 		handlerStarted = true;
 	}
+
 	// handler for individual egg fall event
 	protected void createEggFallHandler() {
 
@@ -196,7 +199,7 @@ public class EggGame {
 		//set to final so it's accessible inside runnable
 		final int pos = position;
 		
-		//create a random delay form 0 to 800 milliseconds 
+		//create a random delay form 0 to 200 milliseconds 
 		//for every egg fall
 		Random r = new Random();
 		int delayEggFall = r.nextInt(200);
@@ -210,44 +213,29 @@ public class EggGame {
 				//shakes chicken
 				main.shakeChicken(pos);
 				
+				//creates a random object
+				Random rand = new Random();
+				String color = rand.nextFloat() > 0.9 ? "gold":"white";
 				//creates the egg
-				final ImageView eggView = main.createEgg(pos);
+				final ImageView eggView = main.createEgg(pos, color);
 				
 				//set falling animation
 				eggAnimation = AnimationUtils.loadAnimation(main,
 						R.anim.eggdrop);
 				//set a random duration for egg fall ranging from 1.6-2 seconds
-				Random rand = new Random();
-				int duration = rand.nextInt(150) + 2500 - (level * 70);
+				int duration;
+				
+				duration = rand.nextInt(150) + 2700 - (level * 80);
+
 				eggAnimation.setDuration(duration);
 				
 				//start animation
 				eggView.startAnimation(eggAnimation);
 				animationStarted = true;
-				animListener = new AnimationListener() {
-
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						if(handlerStarted){//condition prevents showing of broken egg
-							eggView.setVisibility(View.GONE);
-							main.checkIfScored(pos);
-							animationStarted = false;
-						}
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-
-					}
-
-					@Override
-					public void onAnimationStart(Animation animation) {
-
-					}
-
-				};
-				//set the listener
-				eggAnimation.setAnimationListener(animListener);
+				
+				//set Listener
+				setMyAnimListener(eggAnimation, pos, eggView, color);
+				
 						
 			}
 			
@@ -256,6 +244,64 @@ public class EggGame {
 			
 
 	}// end startEggFall()
+
+	protected void setMyAnimListener(Animation eggAnimation2, final int pos, 
+									final ImageView eggView,  String color) {
+		
+		animWhiteListener = new AnimationListener() {
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				if(handlerStarted){//condition prevents showing of broken egg
+					eggView.setVisibility(View.GONE);
+					main.checkIfScored(pos, 1);
+					animationStarted = false;
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+
+			}
+
+		};
+		//set the listener
+		animGoldListener = new AnimationListener() {
+
+			@Override
+			public void onAnimationEnd(Animation arg0) {
+				if(handlerStarted){//condition prevents showing of broken egg
+					eggView.setVisibility(View.GONE);
+					main.checkIfScored(pos, 2);
+					animationStarted = false;
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onAnimationStart(Animation arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
+		
+		if(color == "white"){
+			eggAnimation.setAnimationListener(animWhiteListener);
+		}else{
+			eggAnimation.setAnimationListener(animGoldListener);
+		}
+	}
 
 	//restarts the game
 	public void resetGame() {
