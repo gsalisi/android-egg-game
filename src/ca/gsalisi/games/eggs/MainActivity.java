@@ -65,12 +65,12 @@ public class MainActivity extends Activity {
 		initializeGameGraphics(); // initialize graphics for main view
 		initializeSoundFx();
 		//initSensors(); // initialize sensors
-		soundsOn = true;
 		
 		//get existing high score
-		pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
+		pref = this.getSharedPreferences("ca.gsalisi.eggs", Context.MODE_PRIVATE);
 		bestScore = pref.getInt("best", 0);
-
+		soundsOn = pref.getBoolean("soundfx", true);
+		
 		updateBest(); //update high score view
 		
 		gameOverBool = false; //signals the game is not in the game over state
@@ -377,7 +377,7 @@ public class MainActivity extends Activity {
 		
 		if(eggGame.scoreCount > bestScore){//save high score if it is beaten
 			bestScore = eggGame.scoreCount;
-			pref = this.getSharedPreferences("gsalisiBest", Context.MODE_PRIVATE);
+			pref = this.getSharedPreferences("ca.gsalisi.eggs", Context.MODE_PRIVATE);
 			Editor editor = pref.edit();
 			editor.putInt("best", bestScore);
 			editor.commit();

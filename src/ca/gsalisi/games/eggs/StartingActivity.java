@@ -3,7 +3,10 @@ package ca.gsalisi.games.eggs;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.DisplayMetrics;
@@ -20,6 +23,9 @@ import android.widget.ImageView;
 public class StartingActivity extends Activity {
 	 
 	
+	private boolean soundOn;
+	private SharedPreferences pref;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,7 +45,8 @@ public class StartingActivity extends Activity {
 		Log.d("widthPx: "+String.valueOf(widthPx),"heightPx: "+String.valueOf(heightPx));
 		Log.d("widthDP: "+String.valueOf(widthDp),"heightDP: "+String.valueOf(heightDp)); 
 		//--------------------------------------------------------
-		
+		pref = this.getSharedPreferences("ca.gsalisi.eggs", Context.MODE_PRIVATE);
+		soundOn = pref.getBoolean("soundfx", true);
 		
 		playButton.setOnClickListener(new OnClickListener() {
 
@@ -49,11 +56,14 @@ public class StartingActivity extends Activity {
 				Handler h = new Handler();
 				h.postDelayed(new Runnable(){
 
+					
+
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						startActivity(new Intent(StartingActivity.this,
-								MainActivity.class));
+						Intent intent = new Intent(StartingActivity.this,
+								MainActivity.class);
+						startActivity(intent);
 						StartingActivity.this.overridePendingTransition(0,0);
 					}
 				}, 100);
@@ -61,15 +71,31 @@ public class StartingActivity extends Activity {
 			}
 		});
 		
-		ImageButton btn_settings = (ImageButton) findViewById(R.id.btn_soundfx);
-		
+		final ImageButton btn_settings = (ImageButton) findViewById(R.id.btn_soundfx);
+		if(soundOn){
+			btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
+		}else{
+			btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode);
+		}
 		
 		btn_settings.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// animate first
-				// start settings activity
+				if(soundOn){
+					soundOn = false;
+					Editor editor = pref.edit();
+					editor.putBoolean("soundfx", false);
+					editor.commit();
+					btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode);
+					
+				}else{
+					soundOn = true;
+					Editor editor = pref.edit();
+					editor.putBoolean("soundfx", true);
+					editor.commit();
+					btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
+				}
 
 			}
 
@@ -78,6 +104,13 @@ public class StartingActivity extends Activity {
 		
 
 	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+	}
+	
 	
 
 }
