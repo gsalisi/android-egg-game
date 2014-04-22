@@ -24,6 +24,7 @@ public class EggGame {
 	private Handler eggDelayHandler;
 	private Handler levelHandler;
 	private Handler eggIntervalHandler;
+	private Handler countdownHandler;
 	
 	private int changeCount;
 	private int prevPosition;
@@ -31,6 +32,7 @@ public class EggGame {
 	private Runnable eggDelayRunnable;
 	private Runnable levelRunnable;
 	private Runnable eggIntervalRunnable;
+	private Runnable countdownRunnable;
 	
 	protected int level;
 	protected int scoreCount;
@@ -39,6 +41,7 @@ public class EggGame {
 	
 	public boolean gameInSession;
 	public boolean handlerStarted;
+	private int countdown;
 
 
 	//Egg Game Constructor
@@ -62,14 +65,14 @@ public class EggGame {
 		changeCount = 0;
 		
 		//put the basket in center
-		main.hScroll.post(new Runnable(){
+		main.hScroll.postDelayed(new Runnable(){
 
 			@Override
 			public void run() {
 				main.hScroll.smoothScrollTo(main.convertToPixel(120),0);	
 			}
 			
-		});
+		}, 3000);
 		
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
@@ -78,27 +81,35 @@ public class EggGame {
 		//initialize the animation for flashing count down
 		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
 		
-		countdownTimer = new CountDownTimer( 4000, 1000 ){
+		countdown = 3;
+		countdownHandler = new Handler();
+		countdownRunnable = new Runnable(){
 
 			@Override
-			public void onFinish() {
-				main.countdownView.setVisibility(View.GONE);
-				if(gameInSession){
-					initiateGameHandlers();
+			public void run() {
+				// TODO Auto-generated method stub
+				if(countdown>0){
+					main.playSoundEffect(5, 100);
+					main.countdownView.setText(String.valueOf(countdown));
+					main.countdownView.startAnimation(fadeOut);
+					countdownHandler.postDelayed(countdownRunnable, 1000);
+					countdown--;
+				}else{
+					main.playSoundEffect(6, 100);
+					main.countdownView.setTextSize(180);
+					main.countdownView.setText("Go!");
+					main.countdownView.startAnimation(fadeOut);
+					if(gameInSession){
+						initiateGameHandlers();
+						countdownHandler.removeCallbacks(countdownRunnable);
+					}
 				}
 			}
-
-			@Override
-			public void onTick(long num) {
-				num /= 1000;
-				main.countdownView.setText(String.valueOf(num));
-				main.countdownView.startAnimation(fadeOut);	
-			}
-			
 		};
-		countdownTimer.start();
 		
-
+		countdownHandler.postDelayed(countdownRunnable, 300);
+		
+		
 	}// end startGame
 	
 	//initiate game handlers
@@ -341,6 +352,7 @@ public class EggGame {
 		eggDelayHandler.removeCallbacks(eggDelayRunnable);
 		levelHandler.removeCallbacks(levelRunnable);
 		eggIntervalHandler.removeCallbacks(eggIntervalRunnable);
+		countdownHandler.removeCallbacks(countdownRunnable);
 		handlerStarted = false;
 	
 	}//end of cancelTimers()

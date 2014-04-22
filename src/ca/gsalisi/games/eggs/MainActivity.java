@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
 	private Typeface typeface;
 	
 	protected SoundPool soundPool;
-	protected int[] soundIds = new int[5];
+	protected int[] soundIds = new int[7];
 	private boolean soundsOn;
 
 
@@ -229,6 +229,8 @@ public class MainActivity extends Activity {
 		soundIds[2] = soundPool.load(this, R.raw.egg_dropped, 1);
 		soundIds[3] = soundPool.load(this, R.raw.score, 1);
 		soundIds[4] = soundPool.load(this, R.raw.score_2, 1);
+		soundIds[5] = soundPool.load(this, R.raw.countdown_sec, 1);
+		soundIds[6] = soundPool.load(this, R.raw.countdown_sec_go, 1);
 		
 	}
 	//creates a new egg view in the required position
@@ -388,7 +390,7 @@ public class MainActivity extends Activity {
 		//creates dialog
 		overDialog = new Dialog(MainActivity.this);
 		overDialog.setContentView(R.layout.game_over);
-		overDialog.setCancelable(false);
+
 		overDialog.setCanceledOnTouchOutside(false);
 		overDialog.setTitle("Game Over!");
 		
@@ -461,7 +463,7 @@ public class MainActivity extends Activity {
 			break;
 		}
 	}
-	private void playSoundEffect(int id, int vol) {
+	void playSoundEffect(int id, int vol) {
 		
 		if(soundsOn){
 			if(id == 2){
