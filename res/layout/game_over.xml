@@ -4,36 +4,36 @@
     android:layout_height="150dp"
     android:background="#ddffffff" 
     >
-    <View 
+    <ImageView 
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="2dp"
         android:layout_alignParentTop="true"
-        android:src="#44ffffff"
-        />
+        android:background="#aa000000"
+    />
         
 	<TextView
         android:id="@+id/score_view2"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:text="Score: 0"
+        android:text="Score : 0"
         android:textColor="#333333"
         android:textSize="27sp" />
 
 	<TextView
 	    android:id="@+id/best_view2"
-	    android:layout_width="120dp"
-	    android:layout_height="40dp"
+	    android:layout_width="80dp"
+	    android:layout_height="wrap_content"
 	    android:layout_alignParentRight="true"
 	    android:layout_alignParentTop="true"
 	    android:layout_marginTop="20dp"
-	    android:layout_marginRight="10dp"
+	    android:layout_marginRight="40dp"
 	    android:gravity="center"
-	    android:text="Best: X"
+	    android:text="Best : 0"
 	    android:textColor="#333333"
 	    android:textSize="27sp" />
 	<ImageButton

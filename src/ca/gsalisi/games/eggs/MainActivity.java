@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
 	private ImageView eggBrokenRight;
 	private TextView livesView;
 	private TextView bestScoreView;
+	private TextView levelView;
 	private SharedPreferences pref;
 	private Dialog overDialog;
 	
@@ -55,6 +56,8 @@ public class MainActivity extends Activity {
 	protected SoundPool soundPool;
 	protected int[] soundIds = new int[7];
 	private boolean soundsOn;
+	private int DEFAULT_VOLUME = 60;
+	
 
 
 	@Override
@@ -197,12 +200,14 @@ public class MainActivity extends Activity {
 		reset_btn = (ImageButton) findViewById(R.id.btn_reset);
 		bestScoreView = (TextView) findViewById(R.id.best_view);
 		TextView livesLabel = (TextView) findViewById(R.id.lives_label);
+		levelView = (TextView) findViewById(R.id.level_view);
 		
 		livesLabel.setTypeface(typeface);
 		countdownView.setTypeface(typeface);
 		livesView.setTypeface(typeface);
 		scoreView.setTypeface(typeface);
 		bestScoreView.setTypeface(typeface);
+		levelView.setTypeface(typeface);
 		
 	
 	}// end initializeGraphics()
@@ -224,7 +229,7 @@ public class MainActivity extends Activity {
 
 		soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
 
-		soundIds[0] = soundPool.load(this, R.raw.laying_hen_white, 1);
+		soundIds[0] = soundPool.load(this, R.raw.score_neg, 1);
 		soundIds[1] = soundPool.load(this, R.raw.laying_hen_gold, 1);
 		soundIds[2] = soundPool.load(this, R.raw.egg_dropped, 1);
 		soundIds[3] = soundPool.load(this, R.raw.score, 1);
@@ -266,10 +271,12 @@ public class MainActivity extends Activity {
 		eggView = new ImageView(this);
 		if(color.equals("white")){
 			eggView.setImageResource(R.drawable.egg_white);
-			playSoundEffect(0, 50);
-		}else{
+			//playSoundEffect(0, 50);
+		}else if(color.equals("gold")){
 			eggView.setImageResource(R.drawable.egg_gold);
 			playSoundEffect(1, 50);
+		}else{
+			eggView.setImageResource(R.drawable.egg_bad);
 		}
 		eggView.setLayoutParams(layoutParams);
 
@@ -302,13 +309,13 @@ public class MainActivity extends Activity {
 		switch (position) {
 		case 0:
 			
-			if(xBasketPosition > convertToPixel(210)){
+			if(xBasketPosition > convertToPixel(205)){
 				caught = true;
 			}
 			
 			break;
 		case 1:
-			if(xBasketPosition < convertToPixel(150) 
+			if(xBasketPosition < convertToPixel(155) 
 						&& xBasketPosition > convertToPixel(90)){
 				caught = true;
 			}
@@ -326,23 +333,28 @@ public class MainActivity extends Activity {
 			eggGame.scoreCount += scoreInc;
 			updateScore(eggGame.scoreCount);
 			if(scoreInc == 1){
-				playSoundEffect(3, 80);
+				playSoundEffect(3, DEFAULT_VOLUME);
+			}else if(scoreInc == 2){
+				playSoundEffect(4, DEFAULT_VOLUME);
 			}else{
-				playSoundEffect(4, 80);
+				playSoundEffect(0, DEFAULT_VOLUME);
 			}
 						
 		}else{
 			
 			showBrokenEgg(position);
-			playSoundEffect(2, 80);
-
-			eggGame.numberOfLives--;
+			playSoundEffect(2, DEFAULT_VOLUME);
 			
-			if(eggGame.numberOfLives <= 0){
-				gameOver();
-			}else{
-				updateLives(eggGame.numberOfLives);
+			if(scoreInc != -5){
+				
+				eggGame.numberOfLives--;	
+				if(eggGame.numberOfLives <= 0){
+					gameOver();
+				}else{
+					updateLives(eggGame.numberOfLives);
+				}
 			}
+
 		}
 		
 	}//end of checkIfScored()
@@ -479,6 +491,12 @@ public class MainActivity extends Activity {
 				soundPool.play(soundIds[id], vol, vol, 1, 0, 1);
 			}
 		}
+	}
+
+
+	public void updateLevel(int level) {
+		levelView.setText("Level "+String.valueOf(level));
+		
 	}
 
 	

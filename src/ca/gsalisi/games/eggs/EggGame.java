@@ -42,6 +42,7 @@ public class EggGame {
 	public boolean gameInSession;
 	public boolean handlerStarted;
 	private int countdown;
+	private AnimationListener animBadListener;
 
 
 	//Egg Game Constructor
@@ -64,16 +65,6 @@ public class EggGame {
 		prevPosition = -1; //initiate variables
 		changeCount = 0;
 		
-		//put the basket in center
-		main.hScroll.postDelayed(new Runnable(){
-
-			@Override
-			public void run() {
-				main.hScroll.smoothScrollTo(main.convertToPixel(120),0);	
-			}
-			
-		}, 2000);
-		
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
@@ -88,6 +79,9 @@ public class EggGame {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				if(countdown == 3 ){
+					main.hScroll.smoothScrollTo(main.convertToPixel(120),0);
+				}
 				if(countdown>0){
 					main.playSoundEffect(5, 100);
 					main.countdownView.setTextSize(300);
@@ -129,6 +123,7 @@ public class EggGame {
 			public void run() {
 			
 				if (level != 0 && eggDelayTime >= 300) {
+					main.updateLevel(level/2);
 					eggDelayTime -= 100;
 				}
 				if(level == 0){	
@@ -226,7 +221,9 @@ public class EggGame {
 				
 				//creates a random object
 				Random rand = new Random();
-				String color = rand.nextFloat() > 0.9 ? "gold":"white";
+				Float randF = rand.nextFloat();
+				String color = randF > 0.9 ? "gold":"white";
+				color = (0.9 > randF && randF > 0.8) ? "black":"white";
 				//creates the egg
 				final ImageView eggView = main.createEgg(pos, color);
 				
@@ -303,11 +300,33 @@ public class EggGame {
 			}
 			
 		};
-		
+		animBadListener = new AnimationListener() {
+
+			@Override
+			public void onAnimationEnd(Animation arg0) {
+				if(handlerStarted){//condition prevents showing of broken egg
+					eggView.setVisibility(View.GONE);
+					main.checkIfScored(pos, -5);
+					animationStarted = false;
+				}
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation arg0) {
+			}
+
+			@Override
+			public void onAnimationStart(Animation arg0) {
+
+			}
+			
+		};
 		if(color.equals("white")){
 			eggAnimation.setAnimationListener(animWhiteListener);
-		}else{
+		}else if(color.equals("gold")){
 			eggAnimation.setAnimationListener(animGoldListener);
+		}else{
+			eggAnimation.setAnimationListener(animBadListener);
 		}
 	}
 
