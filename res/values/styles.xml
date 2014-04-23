@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -16,5 +16,19 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    
+     <style name="CustomDialog" 
+         	parent="@android:style/Theme.Dialog"> 
+         <item name="android:windowTitleStyle">
+             @style/MyDialogWindowTitle
+         </item> 
+     </style> 
+     <style name="MyDialogWindowTitle" 
+         parent="@android:style/TextAppearance.DialogWindowTitle"> 
+         <item name="android:background">#eeffffff</item> 
+         <item name="android:gravity">center_horizontal</item>
+         <item name="android:textSize">30sp</item>
+         <item name="android:textColor">#222222</item>  
+     </style>
 
 </resources>

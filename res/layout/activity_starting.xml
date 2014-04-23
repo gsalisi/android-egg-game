@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="78dp"
-		android:src="@drawable/game_title"/>
+		android:src="@drawable/title_chickeneggs"/>
         
  	<ImageView
         android:id="@+id/frame"

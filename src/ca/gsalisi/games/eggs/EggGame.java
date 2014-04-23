@@ -72,7 +72,7 @@ public class EggGame {
 				main.hScroll.smoothScrollTo(main.convertToPixel(120),0);	
 			}
 			
-		}, 3000);
+		}, 2000);
 		
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
@@ -90,6 +90,7 @@ public class EggGame {
 				// TODO Auto-generated method stub
 				if(countdown>0){
 					main.playSoundEffect(5, 100);
+					main.countdownView.setTextSize(300);
 					main.countdownView.setText(String.valueOf(countdown));
 					main.countdownView.startAnimation(fadeOut);
 					countdownHandler.postDelayed(countdownRunnable, 1000);
@@ -303,7 +304,7 @@ public class EggGame {
 			
 		};
 		
-		if(color == "white"){
+		if(color.equals("white")){
 			eggAnimation.setAnimationListener(animWhiteListener);
 		}else{
 			eggAnimation.setAnimationListener(animGoldListener);
@@ -329,7 +330,6 @@ public class EggGame {
 		Log.d("stopGame", "STOPPED");
 		
 		gameInSession = false;
-		
 		level = 0; //important! this prevents remaining task scheduled 
 					//on handlers to continue 
 		

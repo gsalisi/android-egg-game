@@ -264,7 +264,7 @@ public class MainActivity extends Activity {
 		}
 
 		eggView = new ImageView(this);
-		if(color=="white"){
+		if(color.equals("white")){
 			eggView.setImageResource(R.drawable.egg_white);
 			playSoundEffect(0, 50);
 		}else{
@@ -388,14 +388,21 @@ public class MainActivity extends Activity {
 		eggGame.stopGame();
 		
 		//creates dialog
-		overDialog = new Dialog(MainActivity.this);
+		overDialog = new Dialog(MainActivity.this, R.style.CustomDialog);
 		overDialog.setContentView(R.layout.game_over);
-
 		overDialog.setCanceledOnTouchOutside(false);
+	
+		TextView tv = new TextView(this);
+		tv.setText("Game Over!");
+		tv.setTypeface(typeface);
+		
 		overDialog.setTitle("Game Over!");
 		
 		TextView scoreOver = (TextView) overDialog.findViewById(R.id.score_view2);
 		TextView bestOver = (TextView) overDialog.findViewById(R.id.best_view2);
+		
+		scoreOver.setTypeface(typeface);
+		bestOver.setTypeface(typeface);
 		
 		scoreOver.setText(scoreView.getText().toString());
 		bestOver.setText(bestScoreView.getText().toString());
