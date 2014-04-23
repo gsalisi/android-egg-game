@@ -122,9 +122,12 @@ public class EggGame {
 			@Override
 			public void run() {
 			
-				if (level != 0 && eggDelayTime >= 300) {
-					main.updateLevel(level/2);
+				if (level != 0 && eggDelayTime >= 600) {
+					main.updateLevel(level/2 + 1);
 					eggDelayTime -= 100;
+				}
+				if (eggDelayTime < 600 && eggDelayTime >= 300){
+					eggDelayTime -= 10;
 				}
 				if(level == 0){	
 					createEggFallHandler();	
@@ -153,10 +156,12 @@ public class EggGame {
 
 			@Override
 			public void run() {
-//				Log.d("EggInterval Handler", "Egg fall called!");
+				//generate random position
 				int position = generateRandomPosition();
+				//start the egg fall
 				startEggFall(position);
 				if(gameInSession){
+					//set delay time of every eggfall
 					eggIntervalHandler.postDelayed(eggIntervalRunnable, eggDelayTime);
 				}
 			}
@@ -174,7 +179,7 @@ public class EggGame {
 		
 		Random rand = new Random();
 		int pos = rand.nextInt(3);
-		
+		//conditions prevent same position > 3 times
 		if(prevPosition == pos){
 			changeCount++;
 		}else{
@@ -222,8 +227,14 @@ public class EggGame {
 				//creates a random object
 				Random rand = new Random();
 				Float randF = rand.nextFloat();
-				String color = randF > 0.9 ? "gold":"white";
-				color = (0.9 > randF && randF > 0.8) ? "black":"white";
+				String color;
+				if(randF >= 0.9){
+					color = "gold";
+				}else if(randF<0.9 && randF>=0.8){
+					color = "cracked";
+				}else{
+					color = "white";
+				}
 				//creates the egg
 				final ImageView eggView = main.createEgg(pos, color);
 				
@@ -233,7 +244,11 @@ public class EggGame {
 				//set a random duration for egg fall ranging from 1.6-2 seconds
 				int duration;
 				
-				duration = rand.nextInt(150) + 2700 - (level * 80);
+				if(level < 10){
+					duration = rand.nextInt(150) + 2800 - (level * 80);
+				}else{
+					duration = rand.nextInt(150) + 2000 - (level * 10);
+				}
 
 				eggAnimation.setDuration(duration);
 				
@@ -285,7 +300,7 @@ public class EggGame {
 			public void onAnimationEnd(Animation arg0) {
 				if(handlerStarted){//condition prevents showing of broken egg
 					eggView.setVisibility(View.GONE);
-					main.checkIfScored(pos, 2);
+					main.checkIfScored(pos, 3);
 					animationStarted = false;
 				}
 			}

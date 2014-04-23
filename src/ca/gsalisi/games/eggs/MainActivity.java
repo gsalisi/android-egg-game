@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -56,7 +58,7 @@ public class MainActivity extends Activity {
 	protected SoundPool soundPool;
 	protected int[] soundIds = new int[7];
 	private boolean soundsOn;
-	private int DEFAULT_VOLUME = 60;
+	private int DEFAULT_VOLUME = 50;
 	
 
 
@@ -66,6 +68,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		initializeGameGraphics(); // initialize graphics for main view
+		chickenFallOut();
 		initializeSoundFx();
 		//initSensors(); // initialize sensors
 		
@@ -93,6 +96,12 @@ public class MainActivity extends Activity {
 		});
 
 	}// end OnCreate
+
+	//animate chicken from top of the screen
+	private void chickenFallOut() {
+		
+		
+	}
 
 
 	//cancel timers when the window is closed or when 
@@ -145,42 +154,11 @@ public class MainActivity extends Activity {
 				
 		//---- Initialize broken eggs ----//
 		//needs to create a function to make the code better and shorter!!
-		RelativeLayout.LayoutParams layoutParams = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-		layoutParams.setMargins(convertToPixel(10), 0, 0, convertToPixel(13));
-		layoutParams.height = convertToPixel(44);
-		
-		eggBrokenLeft = new ImageView(this);
-		eggBrokenLeft.setImageResource(R.drawable.egg_broken);
-		eggBrokenLeft.setLayoutParams(layoutParams);
-		
-		
-		RelativeLayout.LayoutParams layoutParams1 = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		
-		layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL,
-				RelativeLayout.TRUE);
-		layoutParams1.setMargins(0, 0, 0, convertToPixel(13));
-		layoutParams1.height = convertToPixel(44);
-		
-		eggBrokenCenter = new ImageView(this);
-		eggBrokenCenter.setImageResource(R.drawable.egg_broken);
-		eggBrokenCenter.setLayoutParams(layoutParams1);
-	
-		RelativeLayout.LayoutParams layoutParams2 = getMyLayoutParams(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		
-		layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		layoutParams2.setMargins(0, 0, convertToPixel(10), convertToPixel(13));
-		layoutParams2.height = convertToPixel(44);
+		eggBrokenLeft = (ImageView) findViewById(R.id.eggBrokenLeft);
+		eggBrokenCenter = (ImageView) findViewById(R.id.eggBrokenCenter);
+		eggBrokenRight = (ImageView) findViewById(R.id.eggBrokenRight);
 
-		eggBrokenRight = new ImageView(this);
-		eggBrokenRight.setImageResource(R.drawable.egg_broken);
-		eggBrokenRight.setLayoutParams(layoutParams2);
-		
-		rLayout.addView(eggBrokenLeft);
-		rLayout.addView(eggBrokenCenter);
-		rLayout.addView(eggBrokenRight);
-	
 		eggBrokenLeft.setVisibility(View.INVISIBLE);
 		eggBrokenCenter.setVisibility(View.INVISIBLE);
 		eggBrokenRight.setVisibility(View.INVISIBLE);
@@ -334,7 +312,7 @@ public class MainActivity extends Activity {
 			updateScore(eggGame.scoreCount);
 			if(scoreInc == 1){
 				playSoundEffect(3, DEFAULT_VOLUME);
-			}else if(scoreInc == 2){
+			}else if(scoreInc == 3){
 				playSoundEffect(4, DEFAULT_VOLUME);
 			}else{
 				playSoundEffect(0, DEFAULT_VOLUME);
@@ -342,7 +320,7 @@ public class MainActivity extends Activity {
 						
 		}else{
 			
-			showBrokenEgg(position);
+			showBrokenEgg(position, scoreInc);
 			playSoundEffect(2, DEFAULT_VOLUME);
 			
 			if(scoreInc != -5){
@@ -359,12 +337,16 @@ public class MainActivity extends Activity {
 		
 	}//end of checkIfScored()
 	
-	public void showBrokenEgg(int position) {
+	public void showBrokenEgg(int position, int scoreInc) {
 		
 		//reveal broken egg view and then fade it out
 		Animation eggFade = AnimationUtils.loadAnimation(this,
 				R.anim.fadeout);
-
+		if(scoreInc == 3){
+			eggBrokenLeft.setImageResource(R.drawable.egg_gold_broken);
+		}else{
+			eggBrokenLeft.setImageResource(R.drawable.egg_bad_broken);
+		}
 		switch (position) {
 		case 0:
 			eggBrokenLeft.setVisibility(View.VISIBLE);
@@ -397,6 +379,7 @@ public class MainActivity extends Activity {
 			editor.commit();
 			updateBest();
 		}
+		
 		eggGame.stopGame();
 		
 		//creates dialog
@@ -429,6 +412,15 @@ public class MainActivity extends Activity {
 			}
 		});
 		overDialog.show();
+		
+		overDialog.setOnCancelListener(new Dialog.OnCancelListener(){
+
+			@Override
+			public void onCancel(DialogInterface arg0) {
+				eggGame.resetGame();
+				gameOverBool = false;
+			}
+		});
 		
 	}//end of gameOver()
 	

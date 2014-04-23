@@ -45,6 +45,41 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="0dp"
         android:src="@drawable/asset_chicken" />
+<!--     <ImageView 
+	  	android:layout_width="match_parent"
+	    android:layout_height="80dp"
+	    android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/asset_ledge"
+	    /> -->
+    <ImageView
+        android:id="@+id/eggBrokenLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/egg_bad_broken" />
+
+    <ImageView
+        android:id="@+id/eggBrokenCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/egg_bad_broken" />
+
+    <ImageView
+        android:id="@+id/eggBrokenRight"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/egg_bad_broken" />
 
 	<RelativeLayout
 	    android:id="@+id/layout_panel"
@@ -136,7 +171,6 @@
 	    android:id="@+id/hScrollView"
 	    android:layout_width="match_parent"
 	    android:layout_height="75dp"
-
 	    android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:scrollbars="none" 
@@ -151,7 +185,7 @@
 
 	        <ImageView
 	            android:id="@+id/basketView"
-	            android:layout_width="380dp"
+	            android:layout_width="500dp"
 	            android:layout_height="55dp"
 	            android:src="@drawable/basket" />
 	        
