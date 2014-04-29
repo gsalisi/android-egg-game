@@ -6,11 +6,13 @@ import android.media.SoundPool;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class EggGame {
 
@@ -43,14 +45,35 @@ public class EggGame {
 	public boolean handlerStarted;
 	private int countdown;
 	private AnimationListener animBadListener;
-
-
+	private int animDuration;
+	
+	final private static int NULL = 0;
+	final private static int DEFAULT_NUMBER_OF_LIVES = 3;
+	final private static int NO_PREVIOUS_POSITION=-1;
+	final private static int LEFT = 0;
+	final private static int CENTER = 1;
+	final private static int RIGHT = 2;
+	final private static int EGG_DELAY_TIME_DEFAULT = 1300;
+	final private static int EGG_DELAY_TIME_DECREMENT = 175;
+	final private static int EGG_DELAY_TIME_DECREMENT_MED = 100;
+	final private static int EGG_DELAY_TIME_DECREMENT_SMALL = 25;
+	final private static int MAX_LEVEL = 50;
+	final private static int TIME_PER_LEVEL = 10000;
+	final private static int TIMING_RANDOMIZER = 150;
+	final private static int DURATION_DEFAULT = 2000;
+	final private static int DURATION_DECREMENT = 60;
+	final private static int DURATION_DECREMENT_MED = 20;
+	final private static int DURATION_DECREMENT_SMALL = 5;
+	final private static String WHITE = "white";
+	final private static String CRACKED = "cracked";
+	final private static String GOLD = "gold";
+	
 	//Egg Game Constructor
 	public EggGame(MainActivity mainActivity) {
 	
 		main = mainActivity;
-		scoreCount = 0;
-		numberOfLives = 3;
+		scoreCount = NULL;
+		numberOfLives = DEFAULT_NUMBER_OF_LIVES;
 		handlerStarted = false;
 		gameInSession = false;
 
@@ -62,16 +85,30 @@ public class EggGame {
 		
 		//signals that the game started but no timers yet
 		gameInSession = true;
-		prevPosition = -1; //initiate variables
-		changeCount = 0;
 		
+		//initiate game variables
+		prevPosition = NO_PREVIOUS_POSITION;
+		changeCount = NULL;
+		level = NULL;
+		eggDelayTime = EGG_DELAY_TIME_DEFAULT;
+		animDuration = DURATION_DEFAULT;
+		main.bringChickensToFront();
+		main.updateLevel(1);
+		
+		startCountdown();
+		
+		
+	}// end startGame
+	
+	private void startCountdown() {
+		// TODO Auto-generated method stub
 		// creates a delay before the start of the game
 		main.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
 		main.countdownView.bringToFront();
 		//initialize the animation for flashing count down
 		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
-		
+				
 		countdown = 3;
 		countdownHandler = new Handler();
 		countdownRunnable = new Runnable(){
@@ -84,14 +121,14 @@ public class EggGame {
 				}
 				if(countdown>0){
 					main.playSoundEffect(5, 100);
-					main.countdownView.setTextSize(300);
+					main.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
 					main.countdownView.setText(String.valueOf(countdown));
 					main.countdownView.startAnimation(fadeOut);
 					countdownHandler.postDelayed(countdownRunnable, 1000);
 					countdown--;
 				}else{
 					main.playSoundEffect(6, 100);
-					main.countdownView.setTextSize(180);
+					main.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 180);
 					main.countdownView.setText("Go!");
 					main.countdownView.startAnimation(fadeOut);
 					if(gameInSession){
@@ -101,42 +138,59 @@ public class EggGame {
 				}
 			}
 		};
-		
+				
 		countdownHandler.postDelayed(countdownRunnable, 300);
-		
-		
-	}// end startGame
-	
+	}
+
 	//initiate game handlers
 	private void initiateGameHandlers() {
 		
-		main.bringChickensToFront();
-		//sensorManager.registerListener(eventListener, rtnVectorSensor, 50000);
-
-		level = 0;
-		eggDelayTime = 1400;
-
 		levelHandler = new Handler();
 		levelRunnable = new Runnable() {
 
 			@Override
 			public void run() {
-			
-				if (level != 0 && eggDelayTime >= 600) {
-					main.updateLevel(level/2 + 1);
-					eggDelayTime -= 100;
-				}
-				if (eggDelayTime < 600 && eggDelayTime >= 300){
-					eggDelayTime -= 10;
-				}
-				if(level == 0){	
+				
+				decrementEggDelayTime();
+				decrementAnimDuration();
+				main.updateLevel(level+1);
+				
+				if(level == NULL){	
 					createEggFallHandler();	
 				}
-				if(level <= 50){
+				if(level <= MAX_LEVEL ){
 					level++;
 				}
 				if(gameInSession){
-					levelHandler.postDelayed(levelRunnable, 10000);
+					levelHandler.postDelayed(levelRunnable, TIME_PER_LEVEL);
+				}
+			}
+			// EGG ANIMATION DURATION CONTROLLER
+			private void decrementAnimDuration() {
+				
+				Random rand = new Random();
+				if( level % 2 == 0 && level < 20){
+					if( level < 7 ){
+						animDuration -= (DURATION_DECREMENT + rand.nextInt(TIMING_RANDOMIZER));
+					}else if( level < 15 ){
+						animDuration -= (DURATION_DECREMENT_MED + rand.nextInt(TIMING_RANDOMIZER));
+					}else{
+						animDuration -= (DURATION_DECREMENT_SMALL + rand.nextInt(TIMING_RANDOMIZER));
+					}
+				}
+			}
+			// EGG DELAYS CONTROLLER
+			private void decrementEggDelayTime() {
+				
+				if( level % 2 == 1 && eggDelayTime >= 300){
+					
+					if (level < 7) {
+						eggDelayTime -= EGG_DELAY_TIME_DECREMENT;
+					}else if( level < 15 ){
+						eggDelayTime -= EGG_DELAY_TIME_DECREMENT_MED;
+					}else{
+						eggDelayTime -= EGG_DELAY_TIME_DECREMENT_SMALL;
+					}
 				}
 			}
 		};
@@ -161,7 +215,7 @@ public class EggGame {
 				//start the egg fall
 				startEggFall(position);
 				if(gameInSession){
-					//set delay time of every eggfall
+					//set delay time of every egg fall
 					eggIntervalHandler.postDelayed(eggIntervalRunnable, eggDelayTime);
 				}
 			}
@@ -183,18 +237,18 @@ public class EggGame {
 		if(prevPosition == pos){
 			changeCount++;
 		}else{
-			changeCount = 0;
+			changeCount = NULL;
 		}
 		if(changeCount == 3){
-			if(pos == 2){
-				pos = rand.nextInt(1);
-			}else if(pos == 1){
-				pos = (rand.nextFloat() > 0.5) ? 2 : 0;
-			}else{
-				pos = (rand.nextFloat() > 0.5) ? 1 : 2;
-			}
 			
-			changeCount = 0;
+			if(pos == RIGHT){
+				pos = rand.nextInt(1);
+			}else if(pos == CENTER){
+				pos = (rand.nextFloat() > 0.5) ? RIGHT : LEFT;
+			}else{
+				pos = (rand.nextFloat() > 0.5) ? CENTER : RIGHT;
+			}
+			changeCount = NULL;
 			
 		}
 		prevPosition = pos;
@@ -213,7 +267,7 @@ public class EggGame {
 		//create a random delay form 0 to 200 milliseconds 
 		//for every egg fall
 		Random r = new Random();
-		int delayEggFall = r.nextInt(200);
+		int delayEggFall = r.nextInt(TIMING_RANDOMIZER);
 		
 //		Log.d("Delay Egg Fall", "Egg fall delay: " +String.valueOf(delayEggFall));
 		eggDelayHandler = new Handler();
@@ -224,33 +278,17 @@ public class EggGame {
 				//shakes chicken
 				main.shakeChicken(pos);
 				
-				//creates a random object
-				Random rand = new Random();
-				Float randF = rand.nextFloat();
-				String color;
-				if(randF >= 0.9){
-					color = "gold";
-				}else if(randF<0.9 && randF>=0.8){
-					color = "cracked";
-				}else{
-					color = "white";
-				}
+				//randomize type of egg
+				String color = getTypeOfEgg();
+				
 				//creates the egg
 				final ImageView eggView = main.createEgg(pos, color);
 				
 				//set falling animation
 				eggAnimation = AnimationUtils.loadAnimation(main,
 						R.anim.eggdrop);
-				//set a random duration for egg fall ranging from 1.6-2 seconds
-				int duration;
-				
-				if(level < 10){
-					duration = rand.nextInt(150) + 2800 - (level * 80);
-				}else{
-					duration = rand.nextInt(150) + 2000 - (level * 10);
-				}
-
-				eggAnimation.setDuration(duration);
+				//set animation duration
+				eggAnimation.setDuration(animDuration);
 				
 				//start animation
 				eggView.startAnimation(eggAnimation);
@@ -258,15 +296,47 @@ public class EggGame {
 				
 				//set Listener
 				setMyAnimListener(eggAnimation, pos, eggView, color);
-				
-						
+							
 			}
-			
+
 		};
 		eggDelayHandler.postDelayed(eggDelayRunnable, delayEggFall);
-			
 
 	}// end startEggFall()
+	
+	private String getTypeOfEgg() {
+		
+		Random rand = new Random();
+		Float randF = rand.nextFloat();
+		String color;
+		
+		if(level <= 5){
+		
+			color = WHITE;
+		
+		}else if( level > 5 && level <= 10){
+			
+			if(randF >= 0.9){
+				color = GOLD;
+			}else{
+				color = WHITE;
+			}
+			return color;
+		
+		}else{
+			
+			if(randF >= 0.9){
+				color = GOLD;
+			}else if(randF<0.9 && randF>=0.8){
+				color = CRACKED;
+			}else{
+				color = WHITE;
+			}
+			
+		}
+		
+		return color;
+	}
 
 	protected void setMyAnimListener(Animation eggAnimation2, final int pos, 
 									final ImageView eggView,  String color) {
@@ -304,14 +374,11 @@ public class EggGame {
 					animationStarted = false;
 				}
 			}
-
 			@Override
-			public void onAnimationRepeat(Animation arg0) {
+			public void onAnimationStart(Animation animation) {
 			}
-
 			@Override
-			public void onAnimationStart(Animation arg0) {
-
+			public void onAnimationRepeat(Animation animation) {
 			}
 			
 		};
@@ -327,13 +394,13 @@ public class EggGame {
 			}
 
 			@Override
-			public void onAnimationRepeat(Animation arg0) {
+			public void onAnimationStart(Animation animation) {
 			}
 
 			@Override
-			public void onAnimationStart(Animation arg0) {
-
+			public void onAnimationRepeat(Animation animation) {
 			}
+
 			
 		};
 		if(color.equals("white")){

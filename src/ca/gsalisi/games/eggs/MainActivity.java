@@ -167,7 +167,7 @@ public class MainActivity extends Activity {
 
 		hScroll = (MyScrollView) findViewById(R.id.hScrollView);
 		basketView = (ImageView) findViewById(R.id.basketView);
-		
+	
 		basketView.getLayoutParams().width = getDeviceWidth()*2 - convertToPixel(170);
 		
 		//-------------- create view references -----------------//
@@ -282,24 +282,34 @@ public class MainActivity extends Activity {
 	public void checkIfScored(int position, int scoreInc) {
 		boolean caught = false;
 		
-		xBasketPosition = hScroll.getScrollX();
+		xBasketPosition = convertToDp(hScroll.getScrollX());
+		
+		int	widthReference = hScroll.getChildAt(0).getMeasuredWidth()-
+		        getWindowManager().getDefaultDisplay().getWidth();
+		int leftCond = widthReference - 20;
+		int centerCondL = (widthReference / 2) + 87;
+		int centerCondR = (widthReference / 2) - 40;
+		int rightCond = 70;
+		
+		Log.d("xBasketposition", String.valueOf(xBasketPosition));
+		Log.d("ScrollMax", String.valueOf(widthReference));
 		
 		switch (position) {
 		case 0:
 			
-			if(xBasketPosition > convertToPixel(205)){
+			if(xBasketPosition > leftCond){
 				caught = true;
 			}
 			
 			break;
 		case 1:
-			if(xBasketPosition < convertToPixel(155) 
-						&& xBasketPosition > convertToPixel(90)){
+			if(xBasketPosition < centerCondL 
+						&& xBasketPosition > centerCondR){
 				caught = true;
 			}
 			break;
 		case 2:
-			if(xBasketPosition < convertToPixel(40)){
+			if(xBasketPosition < rightCond){
 				caught = true;
 			}
 			break;
