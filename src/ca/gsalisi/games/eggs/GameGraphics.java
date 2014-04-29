@@ -1,6 +1,7 @@
 package ca.gsalisi.games.eggs;
 
 import android.graphics.Typeface;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class GameGraphics {
 	private MyScrollView hScroll;
 	private TextView scoreView;
 	private TextView countdownView;
+	public TextView livesLabel;
 	
 	
 	public GameGraphics(MainActivity mainActivity) {
@@ -64,12 +66,18 @@ public class GameGraphics {
 
 		hScroll = (MyScrollView) main.findViewById(R.id.hScrollView);
 		basketView = (ImageView) main.findViewById(R.id.basketView);
-	
-		basketView.getLayoutParams().width = getDeviceWidth()*2 - convertToPixel(170);
+		
+		int devWidthDp = getDeviceWidth();
+		
+		if( devWidthDp <  convertToPx(400) ){
+			basketView.getLayoutParams().width = getDeviceWidth()*2 - convertToPx(170);
+		}else{
+			basketView.getLayoutParams().width = convertToPx(800) - convertToPx(170);
+		}
 			
 		//-------------- create view references -----------------//
 		
-		TextView livesLabel = (TextView) main.findViewById(R.id.lives_label);
+		livesLabel = (TextView) main.findViewById(R.id.lives_label);
 		livesLabel.setTypeface(typeface);
 		
 		livesView = (TextView) main.findViewById(R.id.lives_view);
@@ -95,8 +103,8 @@ public class GameGraphics {
 		switch (position) {//0 for left; 1 for center; 2 for right
 		case 0:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-			layoutParams.setMargins(convertToPixel(25), convertToPixel(60), 0, 0);
-			layoutParams.height = convertToPixel(35);
+			layoutParams.setMargins(convertToPx(25), convertToPx(60), 0, 0);
+			layoutParams.height = convertToPx(35);
 			
 
 			break;
@@ -104,13 +112,13 @@ public class GameGraphics {
 		
 			layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL,
 					RelativeLayout.TRUE);
-			layoutParams.setMargins(0, convertToPixel(60), 0, 0);
-			layoutParams.height = convertToPixel(35);
+			layoutParams.setMargins(0, convertToPx(60), 0, 0);
+			layoutParams.height = convertToPx(35);
 			break;
 		case 2:
 			layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-			layoutParams.setMargins(0, convertToPixel(60), convertToPixel(25), 0);
-			layoutParams.height = convertToPixel(35);
+			layoutParams.setMargins(0, convertToPx(60), convertToPx(25), 0);
+			layoutParams.height = convertToPx(35);
 			break;
 		default:
 			break;
@@ -180,8 +188,7 @@ public class GameGraphics {
 
 	public int getWidthReference() {
 		
-		return hScroll.getChildAt(0).getMeasuredWidth()-
-		        main.getWindowManager().getDefaultDisplay().getWidth();
+		return convertToDp(basketView.getLayoutParams().width/2) - 55;
 	}
 
 	protected LayoutParams getMyLayoutParams(int rule) {
@@ -228,13 +235,15 @@ public class GameGraphics {
 		getScoreView().setText(countStr);
 	}
 	// converts dp to pixels.
-	public int convertToPixel(int dp) {
+	public int convertToPx(int dp) {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
 				main.getResources().getDisplayMetrics());
 	}
 	public int convertToDp(int px){
-		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px,
-				main.getResources().getDisplayMetrics());
+		
+		float scale = main.getResources().getDisplayMetrics().density;
+		int dp = (int) (px / scale + 0.5f);
+		return dp; 
 	}
 	public int getDeviceWidth(){
 		return (int) main.getResources().getDisplayMetrics().widthPixels;  // displayMetrics.density;

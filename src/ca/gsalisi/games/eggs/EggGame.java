@@ -122,7 +122,7 @@ public class EggGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				if(countdown == 3 ){
-					gameGraphics.getBasketScrollView().smoothScrollTo(gameGraphics.convertToPixel(120),0);
+					gameGraphics.getBasketScrollView().smoothScrollTo(gameGraphics.convertToPx(120),0);
 				}
 				if(countdown>0){
 					soundHandler.playSoundEffect(5, 50);
@@ -422,18 +422,15 @@ public class EggGame {
 	public void checkIfScored(int position, int scoreInc) {
 		boolean caught = false;
 		
-		int xBasketPosition = gameGraphics.convertToDp(
-				gameGraphics.getBasketScrollView().getScrollX());
-		
+		int xBasketPosition = gameGraphics.getBasketScrollView().getScrollX();
 		int	widthReference = gameGraphics.getWidthReference();
-				
-		int leftCond = widthReference - 20;
-		int centerCondL = (widthReference / 2) + 87;
-		int centerCondR = (widthReference / 2) - 40;
-		int rightCond = 70;
 		
-		Log.d("xBasketposition", String.valueOf(xBasketPosition));
-		Log.d("ScrollMax", String.valueOf(widthReference));
+		xBasketPosition = gameGraphics.convertToDp(xBasketPosition);
+				
+		int leftCond = widthReference - 50;
+		int centerCondL = (widthReference / 2) + 48;
+		int centerCondR = (widthReference / 2) - 48;
+		int rightCond = 50;
 		
 		switch (position) {
 		case 0:

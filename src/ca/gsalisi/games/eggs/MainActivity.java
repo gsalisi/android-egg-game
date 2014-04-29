@@ -149,6 +149,9 @@ public class MainActivity extends Activity {
 		TextView scoreOver = (TextView) overDialog.findViewById(R.id.score_view2);
 		TextView bestOver = (TextView) overDialog.findViewById(R.id.best_view2);
 		
+		scoreOver.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
+		bestOver.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
+		
 		scoreOver.setTypeface(typeface);
 		bestOver.setTypeface(typeface);
 		
