@@ -15,8 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class EggGame {
-
+ 
 	private MainActivity main;
+	
+	private GameGraphics gameGraphics;
+	private SoundHandler soundHandler;
 	private AnimationListener animGoldListener;
 	private AnimationListener animWhiteListener;
 	private Animation eggAnimation;
@@ -69,9 +72,10 @@ public class EggGame {
 	final private static String GOLD = "gold";
 	
 	//Egg Game Constructor
-	public EggGame(MainActivity mainActivity) {
-	
-		main = mainActivity;
+	public EggGame(MainActivity mainActivity, GameGraphics gameGraphics, SoundHandler soundHandler) {
+		this.main = mainActivity;
+		this.soundHandler = soundHandler;
+		this.gameGraphics = gameGraphics;
 		scoreCount = NULL;
 		numberOfLives = DEFAULT_NUMBER_OF_LIVES;
 		handlerStarted = false;
@@ -92,9 +96,9 @@ public class EggGame {
 		level = NULL;
 		eggDelayTime = EGG_DELAY_TIME_DEFAULT;
 		animDuration = DURATION_DEFAULT;
-		main.bringChickensToFront();
-		main.updateLevel(1);
-		
+		gameGraphics.bringChickensToFront();
+		gameGraphics.updateLevel(1);
+		Log.d("GS", "startGame");
 		startCountdown();
 		
 		
@@ -103,9 +107,10 @@ public class EggGame {
 	private void startCountdown() {
 		// TODO Auto-generated method stub
 		// creates a delay before the start of the game
-		main.countdownView.setVisibility(View.VISIBLE);
+		gameGraphics.countdownView.setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
-		main.countdownView.bringToFront();
+		gameGraphics.countdownView.bringToFront();
+		Log.d("GS", "1 startCountdown");
 		//initialize the animation for flashing count down
 		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
 				
@@ -117,20 +122,20 @@ public class EggGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				if(countdown == 3 ){
-					main.hScroll.smoothScrollTo(main.convertToPixel(120),0);
+					gameGraphics.hScroll.smoothScrollTo(gameGraphics.convertToPixel(120),0);
 				}
 				if(countdown>0){
-					main.playSoundEffect(5, 100);
-					main.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
-					main.countdownView.setText(String.valueOf(countdown));
-					main.countdownView.startAnimation(fadeOut);
+					soundHandler.playSoundEffect(5, 50);
+					gameGraphics.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
+					gameGraphics.countdownView.setText(String.valueOf(countdown));
+					gameGraphics.countdownView.startAnimation(fadeOut);
 					countdownHandler.postDelayed(countdownRunnable, 1000);
 					countdown--;
 				}else{
-					main.playSoundEffect(6, 100);
-					main.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 180);
-					main.countdownView.setText("Go!");
-					main.countdownView.startAnimation(fadeOut);
+					soundHandler.playSoundEffect(6, 50);
+					gameGraphics.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 180);
+					gameGraphics.countdownView.setText("Go!");
+					gameGraphics.countdownView.startAnimation(fadeOut);
 					if(gameInSession){
 						initiateGameHandlers();
 						countdownHandler.removeCallbacks(countdownRunnable);
@@ -153,7 +158,7 @@ public class EggGame {
 				
 				decrementEggDelayTime();
 				decrementAnimDuration();
-				main.updateLevel(level+1);
+				gameGraphics.updateLevel(level+1);
 				
 				if(level == NULL){	
 					createEggFallHandler();	
@@ -276,14 +281,16 @@ public class EggGame {
 			@Override
 			public void run() {
 				//shakes chicken
-				main.shakeChicken(pos);
+				gameGraphics.shakeChicken(pos);
 				
 				//randomize type of egg
 				String color = getTypeOfEgg();
 				
 				//creates the egg
-				final ImageView eggView = main.createEgg(pos, color);
-				
+				final ImageView eggView = gameGraphics.createEgg(pos, color);
+				if (color == GOLD){ 
+					soundHandler.playSoundEffect(1, 50);
+				}
 				//set falling animation
 				eggAnimation = AnimationUtils.loadAnimation(main,
 						R.anim.eggdrop);
@@ -347,7 +354,7 @@ public class EggGame {
 			public void onAnimationEnd(Animation animation) {
 				if(handlerStarted){//condition prevents showing of broken egg
 					eggView.setVisibility(View.GONE);
-					main.checkIfScored(pos, 1);
+					checkIfScored(pos, 1);
 					animationStarted = false;
 				}
 			}
@@ -370,7 +377,7 @@ public class EggGame {
 			public void onAnimationEnd(Animation arg0) {
 				if(handlerStarted){//condition prevents showing of broken egg
 					eggView.setVisibility(View.GONE);
-					main.checkIfScored(pos, 3);
+					checkIfScored(pos, 3);
 					animationStarted = false;
 				}
 			}
@@ -388,7 +395,7 @@ public class EggGame {
 			public void onAnimationEnd(Animation arg0) {
 				if(handlerStarted){//condition prevents showing of broken egg
 					eggView.setVisibility(View.GONE);
-					main.checkIfScored(pos, -5);
+					checkIfScored(pos, -5);
 					animationStarted = false;
 				}
 			}
@@ -411,6 +418,76 @@ public class EggGame {
 			eggAnimation.setAnimationListener(animBadListener);
 		}
 	}
+	
+	public void checkIfScored(int position, int scoreInc) {
+		boolean caught = false;
+		
+		int xBasketPosition = gameGraphics.convertToDp(
+				gameGraphics.getBasketScrollView().getScrollX());
+		
+		int	widthReference = gameGraphics.getWidthReference();
+				
+		int leftCond = widthReference - 20;
+		int centerCondL = (widthReference / 2) + 87;
+		int centerCondR = (widthReference / 2) - 40;
+		int rightCond = 70;
+		
+		Log.d("xBasketposition", String.valueOf(xBasketPosition));
+		Log.d("ScrollMax", String.valueOf(widthReference));
+		
+		switch (position) {
+		case 0:
+			
+			if(xBasketPosition > leftCond){
+				caught = true;
+			}
+			
+			break;
+		case 1:
+			if(xBasketPosition < centerCondL 
+						&& xBasketPosition > centerCondR){
+				caught = true;
+			}
+			break;
+		case 2:
+			if(xBasketPosition < rightCond){
+				caught = true;
+			}
+			break;
+		default:
+			break;
+		}
+		
+		if(caught){
+			
+			scoreCount += scoreInc;
+			gameGraphics.updateScore(scoreCount);
+			if(scoreInc == 1){
+				soundHandler.playSoundEffect(3, 50);
+			}else if(scoreInc == 3){
+				soundHandler.playSoundEffect(4, 50);
+			}else{
+				soundHandler.playSoundEffect(0, 50);
+			}
+						
+		}else{
+			
+			gameGraphics.showBrokenEgg(position, scoreInc);
+			soundHandler.playSoundEffect(2, 50);
+			
+			if(scoreInc != -5){
+				
+				numberOfLives--;	
+				if(numberOfLives <= 0){
+					main.gameOver();
+				}else{
+					gameGraphics.updateLives(numberOfLives);
+				}
+			}
+
+		}
+		
+	}//end of checkIfScored()
 
 	//restarts the game
 	public void resetGame() {
@@ -418,9 +495,9 @@ public class EggGame {
 		
 		animationStarted = false;
 		numberOfLives = 3;
-		main.updateLives(numberOfLives);
+		gameGraphics.updateLives(numberOfLives);
 		scoreCount = 0;
-		main.updateScore(scoreCount);
+		gameGraphics.updateScore(scoreCount);
 		
 		startGame();
 		
@@ -439,7 +516,7 @@ public class EggGame {
 		if(animationStarted){
 			Log.d("stopGame","animation cleared!");
 			eggAnimation.cancel();
-			main.eggView.clearAnimation();
+			gameGraphics.eggView.clearAnimation();
 		}
 		//sensorManager.unregisterListener(eventListener);
 		
