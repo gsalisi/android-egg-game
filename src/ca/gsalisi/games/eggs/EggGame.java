@@ -98,19 +98,19 @@ public class EggGame {
 		animDuration = DURATION_DEFAULT;
 		gameGraphics.bringChickensToFront();
 		gameGraphics.updateLevel(1);
-		Log.d("GS", "startGame");
+
 		startCountdown();
 		
 		
 	}// end startGame
 	
 	private void startCountdown() {
-		// TODO Auto-generated method stub
+
 		// creates a delay before the start of the game
-		gameGraphics.countdownView.setVisibility(View.VISIBLE);
+		gameGraphics.getCountdownView().setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
-		gameGraphics.countdownView.bringToFront();
-		Log.d("GS", "1 startCountdown");
+		gameGraphics.getCountdownView().bringToFront();
+		
 		//initialize the animation for flashing count down
 		final Animation fadeOut = AnimationUtils.loadAnimation(main, R.anim.fadeout);
 				
@@ -122,20 +122,20 @@ public class EggGame {
 			public void run() {
 				// TODO Auto-generated method stub
 				if(countdown == 3 ){
-					gameGraphics.hScroll.smoothScrollTo(gameGraphics.convertToPixel(120),0);
+					gameGraphics.getBasketScrollView().smoothScrollTo(gameGraphics.convertToPixel(120),0);
 				}
 				if(countdown>0){
 					soundHandler.playSoundEffect(5, 50);
-					gameGraphics.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
-					gameGraphics.countdownView.setText(String.valueOf(countdown));
-					gameGraphics.countdownView.startAnimation(fadeOut);
+					gameGraphics.getCountdownView().setTextSize(TypedValue.COMPLEX_UNIT_DIP, 300);
+					gameGraphics.getCountdownView().setText(String.valueOf(countdown));
+					gameGraphics.getCountdownView().startAnimation(fadeOut);
 					countdownHandler.postDelayed(countdownRunnable, 1000);
 					countdown--;
 				}else{
 					soundHandler.playSoundEffect(6, 50);
-					gameGraphics.countdownView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 180);
-					gameGraphics.countdownView.setText("Go!");
-					gameGraphics.countdownView.startAnimation(fadeOut);
+					gameGraphics.getCountdownView().setTextSize(TypedValue.COMPLEX_UNIT_DIP, 180);
+					gameGraphics.getCountdownView().setText("Go!");
+					gameGraphics.getCountdownView().startAnimation(fadeOut);
 					if(gameInSession){
 						initiateGameHandlers();
 						countdownHandler.removeCallbacks(countdownRunnable);
@@ -516,7 +516,7 @@ public class EggGame {
 		if(animationStarted){
 			Log.d("stopGame","animation cleared!");
 			eggAnimation.cancel();
-			gameGraphics.eggView.clearAnimation();
+			gameGraphics.getEggView().clearAnimation();
 		}
 		//sensorManager.unregisterListener(eventListener);
 		

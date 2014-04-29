@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class StartingActivity extends Activity {
 	 
@@ -31,20 +33,14 @@ public class StartingActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_starting);
 		Log.d("GS", "On first activity");
-		
-		
+		Typeface typeface = Typeface.createFromAsset(getAssets(),
+		        "fonts/roostheavy.ttf");
+		((TextView) findViewById(R.id.titleView)).setTypeface(typeface);
+		Animation swayingAnim = AnimationUtils.loadAnimation(this, R.anim.sway_main);
+
 		ImageView playButton = (ImageView) findViewById(R.id.btn_play);
+		playButton.startAnimation(swayingAnim);
 		
-		//----------------- here for debugging purposes
-		int widthPx = (int) this.getResources().getDisplayMetrics().widthPixels;
-		int heightPx = (int) this.getResources().getDisplayMetrics().heightPixels;
-		DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics(); 
-		float widthDp =  (int) displayMetrics.widthPixels/ displayMetrics.density;
-		float heightDp =  (int) displayMetrics.heightPixels/ displayMetrics.density;
-		
-		Log.d("widthPx: "+String.valueOf(widthPx),"heightPx: "+String.valueOf(heightPx));
-		Log.d("widthDP: "+String.valueOf(widthDp),"heightDP: "+String.valueOf(heightDp)); 
-		//--------------------------------------------------------
 		pref = this.getSharedPreferences("ca.gsalisi.eggs", Context.MODE_PRIVATE);
 		soundOn = pref.getBoolean("soundfx", true);
 		

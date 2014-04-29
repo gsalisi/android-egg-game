@@ -152,7 +152,7 @@ public class MainActivity extends Activity {
 		scoreOver.setTypeface(typeface);
 		bestOver.setTypeface(typeface);
 		
-		scoreOver.setText(gameGraphics.scoreView.getText().toString());
+		scoreOver.setText(gameGraphics.getScoreView().getText().toString());
 		bestOver.setText(bestScoreView.getText().toString());
 		
 		ImageButton restartbtn = (ImageButton) overDialog.findViewById(R.id.btn_gameover);

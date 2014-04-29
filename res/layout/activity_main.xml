@@ -27,7 +27,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="0dp"
-        android:src="@drawable/asset_chicken" />
+        android:src="@drawable/asset_main_chicken" />
 
     <ImageView
         android:id="@+id/chickenCenter"
@@ -35,7 +35,7 @@
         android:layout_height="120dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/asset_chicken" />
+        android:src="@drawable/asset_main_chicken" />
 
     <ImageView
         android:id="@+id/chickenRight"
@@ -44,7 +44,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="0dp"
-        android:src="@drawable/asset_chicken" />
+        android:src="@drawable/asset_main_chicken" />
 <!--     <ImageView 
 	  	android:layout_width="match_parent"
 	    android:layout_height="80dp"

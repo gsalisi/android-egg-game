@@ -1,18 +1,12 @@
 package ca.gsalisi.games.eggs;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,10 +27,10 @@ public class GameGraphics {
 	private TextView levelView;
 	private Typeface typeface;
 	
-	protected ImageView eggView;
-	protected MyScrollView hScroll;
-	protected TextView scoreView;
-	protected TextView countdownView;
+	private ImageView eggView;
+	private MyScrollView hScroll;
+	private TextView scoreView;
+	private TextView countdownView;
 	
 	
 	public GameGraphics(MainActivity mainActivity) {
@@ -82,10 +76,10 @@ public class GameGraphics {
 		livesView.setTypeface(typeface);
 		
 		countdownView = (TextView) main.findViewById(R.id.countdown_view);
-		countdownView.setTypeface(typeface);
+		getCountdownView().setTypeface(typeface);
 		
 		scoreView = (TextView) main.findViewById(R.id.score_view);
-		scoreView.setTypeface(typeface);
+		getScoreView().setTypeface(typeface);
 		
 		levelView = (TextView) main.findViewById(R.id.level_view);
 		levelView.setTypeface(typeface);
@@ -124,21 +118,21 @@ public class GameGraphics {
 
 		eggView = new ImageView(main);
 		if(color.equals("white")){
-			eggView.setImageResource(R.drawable.egg_white);
+			getEggView().setImageResource(R.drawable.egg_white);
 			//playSoundEffect(0, 50);
 		}else if(color.equals("gold")){
-			eggView.setImageResource(R.drawable.egg_gold);
+			getEggView().setImageResource(R.drawable.egg_gold);
 			
 		}else{
-			eggView.setImageResource(R.drawable.egg_bad);
+			getEggView().setImageResource(R.drawable.egg_bad);
 		}
-		eggView.setLayoutParams(layoutParams);
+		getEggView().setLayoutParams(layoutParams);
 
-		rLayout.addView(eggView);
+		rLayout.addView(getEggView());
 		bringChickensToFront();
 		bringBasketToFront();
 		
-		return eggView;
+		return getEggView();
 		
 	}
 	
@@ -231,7 +225,7 @@ public class GameGraphics {
 	// updates score text view
 	public void updateScore(int score) {
 		String countStr = "Score: " + String.valueOf(score);
-		scoreView.setText(countStr);
+		getScoreView().setText(countStr);
 	}
 	// converts dp to pixels.
 	public int convertToPixel(int dp) {
@@ -255,9 +249,21 @@ public class GameGraphics {
 		
 	}
 
-	public View getBasketScrollView() {
-
+	public HorizontalScrollView getBasketScrollView() {
 		return hScroll;
+	}
+
+	public ImageView getEggView() {
+		return eggView;
+	}
+
+	public TextView getScoreView() {
+		return scoreView;
+	}
+
+
+	public TextView getCountdownView() {
+		return countdownView;
 	}
 
 
