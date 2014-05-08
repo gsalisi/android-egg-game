@@ -57,13 +57,13 @@ public class EggGame {
 	final private static int CENTER = 1;
 	final private static int RIGHT = 2;
 	final private static int EGG_DELAY_TIME_DEFAULT = 1300;
-	final private static int EGG_DELAY_TIME_DECREMENT = 175;
-	final private static int EGG_DELAY_TIME_DECREMENT_MED = 100;
-	final private static int EGG_DELAY_TIME_DECREMENT_SMALL = 25;
+	final private static int EGG_DELAY_TIME_DECREMENT = 200;
+	final private static int EGG_DELAY_TIME_DECREMENT_MED = 75;
+	final private static int EGG_DELAY_TIME_DECREMENT_SMALL = 10;
 	final private static int MAX_LEVEL = 50;
 	final private static int TIME_PER_LEVEL = 10000;
 	final private static int TIMING_RANDOMIZER = 150;
-	final private static int DURATION_DEFAULT = 2000;
+	final private static int DURATION_DEFAULT = 1800;
 	final private static int DURATION_DECREMENT = 60;
 	final private static int DURATION_DECREMENT_MED = 20;
 	final private static int DURATION_DECREMENT_SMALL = 5;
@@ -104,9 +104,9 @@ public class EggGame {
 		
 	}// end startGame
 	
+	//count down before eggs starts falling
 	private void startCountdown() {
 
-		// creates a delay before the start of the game
 		gameGraphics.getCountdownView().setVisibility(View.VISIBLE);
 		main.reset_btn.setEnabled(false);
 		gameGraphics.getCountdownView().bringToFront();
@@ -120,7 +120,6 @@ public class EggGame {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				if(countdown == 3 ){
 					gameGraphics.getBasketScrollView().smoothScrollTo(gameGraphics.convertToPx(120),0);
 				}
@@ -215,10 +214,11 @@ public class EggGame {
 
 			@Override
 			public void run() {
-				//generate random position
+				//get random egg position
 				int position = generateRandomPosition();
-				//start the egg fall
-				startEggFall(position);
+				
+				startEggFall(position);//start an egg fall
+				
 				if(gameInSession){
 					//set delay time of every egg fall
 					eggIntervalHandler.postDelayed(eggIntervalRunnable, eggDelayTime);
@@ -269,8 +269,7 @@ public class EggGame {
 		//set to final so it's accessible inside runnable
 		final int pos = position;
 		
-		//create a random delay form 0 to 200 milliseconds 
-		//for every egg fall
+		//create a random delay for every egg fall
 		Random r = new Random();
 		int delayEggFall = r.nextInt(TIMING_RANDOMIZER);
 		
@@ -291,13 +290,10 @@ public class EggGame {
 				if (color == GOLD){ 
 					soundHandler.playSoundEffect(1, 50);
 				}
-				//set falling animation
+				//egg animation
 				eggAnimation = AnimationUtils.loadAnimation(main,
 						R.anim.eggdrop);
-				//set animation duration
 				eggAnimation.setDuration(animDuration);
-				
-				//start animation
 				eggView.startAnimation(eggAnimation);
 				animationStarted = true;
 				
@@ -427,10 +423,10 @@ public class EggGame {
 		
 		xBasketPosition = gameGraphics.convertToDp(xBasketPosition);
 				
-		int leftCond = widthReference - 50;
+		int leftCond = widthReference - 47;
 		int centerCondL = (widthReference / 2) + 48;
 		int centerCondR = (widthReference / 2) - 48;
-		int rightCond = 50;
+		int rightCond = 47;
 		
 		switch (position) {
 		case 0:
@@ -505,8 +501,7 @@ public class EggGame {
 		Log.d("stopGame", "STOPPED");
 		
 		gameInSession = false;
-		level = 0; //important! this prevents remaining task scheduled 
-					//on handlers to continue 
+		level = 0;
 		
 		cancelTimers();
 		
@@ -515,8 +510,6 @@ public class EggGame {
 			eggAnimation.cancel();
 			gameGraphics.getEggView().clearAnimation();
 		}
-		//sensorManager.unregisterListener(eventListener);
-		
 		
 	}//end of stopGame()
 

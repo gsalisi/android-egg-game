@@ -10,47 +10,50 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".StartingActivity" >
 
-        
-	<TextView
-        android:id="@+id/titleView"
-       	android:gravity="center"
-       	android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-       	android:layout_height="wrap_content"
-       	android:layout_width="match_parent"
-       	android:text="Chicken n' Eggs"
-       	android:textSize="60dp" 
-       	android:alpha="0.4"
-       	android:textColor="#eeeeee"/>
-	
-    <ImageView
-        android:id="@+id/btn_play"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/titleView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-40dp"
-		android:src="@drawable/asset_title_chicken"/>
-
-	<View 
-       	android:layout_width="80dp"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:background="#11ffffff"/>
-	
-    <ImageButton
-        android:id="@+id/btn_soundfx"
-        android:layout_width="70dp"
-        android:layout_height="30dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp"
-        android:background="#00ffffff"
-        android:alpha="0.7"
-        android:src="@android:drawable/ic_lock_silent_mode_off" />
-
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="800dp" >
    
+		<TextView
+	        android:id="@+id/titleView"
+	       	android:gravity="center"
+	       	android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	       	android:layout_height="wrap_content"
+	       	android:layout_width="match_parent"
+	       	android:text="Chicken n' Eggs"
+	       	android:textSize="60dp" 
+	       	android:alpha="0.4"
+	       	android:textColor="#eeeeee"/>
+		
+	    <ImageView
+	        android:id="@+id/btn_play"
+	        android:layout_width="200dp"
+	        android:layout_height="wrap_content"
+	        android:layout_centerVertical="true"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="20dp"
+			android:src="@drawable/asset_title_chicken"/>
+	
+		<View 
+	       	android:layout_width="80dp"
+	        android:layout_height="40dp"
+	        android:layout_centerHorizontal="true"
+	        android:layout_alignParentBottom="true"
+	        android:layout_marginBottom="20dp"
+	        android:background="#11ffffff"/>
+		
+	    <ImageButton
+	        android:id="@+id/btn_soundfx"
+	        android:layout_width="70dp"
+	        android:layout_height="30dp"
+	        android:layout_centerHorizontal="true"
+	        android:layout_alignParentBottom="true"
+	        android:layout_marginBottom="25dp"
+	        android:background="#00ffffff"
+	        android:alpha="0.7"
+	        android:src="@android:drawable/ic_lock_silent_mode_off" />
+
+    </RelativeLayout>
     
 </RelativeLayout>

@@ -1,8 +1,11 @@
 package ca.gsalisi.games.eggs;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +27,6 @@ import android.widget.TextView;
 
 public class StartingActivity extends Activity {
 	 
-	
 	private boolean soundOn;
 	private SharedPreferences pref;
 
@@ -32,52 +34,54 @@ public class StartingActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_starting);
-		Log.d("GS", "On first activity");
+		
+		//set typeface to textview from assets
 		Typeface typeface = Typeface.createFromAsset(getAssets(),
 		        "fonts/roostheavy.ttf");
 		((TextView) findViewById(R.id.titleView)).setTypeface(typeface);
+		
+		//loads animation to chicken
 		Animation swayingAnim = AnimationUtils.loadAnimation(this, R.anim.sway_main);
-
 		ImageView playButton = (ImageView) findViewById(R.id.btn_play);
 		playButton.startAnimation(swayingAnim);
 		
+		//get sounds preferences
 		pref = this.getSharedPreferences("ca.gsalisi.eggs", Context.MODE_PRIVATE);
 		soundOn = pref.getBoolean("soundfx", true);
 		
+		//play button click listener
 		playButton.setOnClickListener(new OnClickListener() {
 
+			@SuppressLint("NewApi")
 			@Override
 			public void onClick(View v) {
-				
-				Handler h = new Handler();
-				h.postDelayed(new Runnable(){
+				final Intent intent = new Intent(StartingActivity.this,
+						MainActivity.class);
+				if(Build.VERSION.SDK_INT > 14){
+					Bundle translateBundle = ActivityOptions.makeCustomAnimation(
+							StartingActivity.this, R.anim.slide_in_left, R.anim.slide_out_left).toBundle();
+					startActivity(intent, translateBundle);
+				}else{
+					startActivity(intent);
 
-					
+				}
 
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						Intent intent = new Intent(StartingActivity.this,
-								MainActivity.class);
-						startActivity(intent);
-						StartingActivity.this.overridePendingTransition(0,0);
-					}
-				}, 100);
-				
 			}
 		});
 		
+		//sounds toggle view
 		final ImageButton btn_settings = (ImageButton) findViewById(R.id.btn_soundfx);
 		if(soundOn){
 			btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
 		}else{
 			btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode);
 		}
-		
+		//sounds toggle listener
 		btn_settings.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				//also edits application preference
 				if(soundOn){
 					soundOn = false;
 					Editor editor = pref.edit();
@@ -92,13 +96,8 @@ public class StartingActivity extends Activity {
 					editor.commit();
 					btn_settings.setImageResource(android.R.drawable.ic_lock_silent_mode_off);
 				}
-
 			}
-
 		});
-		
-		
-
 	}
 
 	@Override

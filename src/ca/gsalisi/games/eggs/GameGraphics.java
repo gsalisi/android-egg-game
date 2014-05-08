@@ -27,12 +27,11 @@ public class GameGraphics {
 	private TextView livesView;
 	private TextView levelView;
 	private Typeface typeface;
-	
 	private ImageView eggView;
 	private MyScrollView hScroll;
 	private TextView scoreView;
 	private TextView countdownView;
-	public TextView livesLabel;
+	private TextView livesLabel;
 	
 	
 	public GameGraphics(MainActivity mainActivity) {
@@ -50,7 +49,15 @@ public class GameGraphics {
 		chickenViewLeft = (ImageView) main.findViewById(R.id.chickenLeft);
 		chickenViewCenter = (ImageView) main.findViewById(R.id.chickenCenter);
 		chickenViewRight = (ImageView) main.findViewById(R.id.chickenRight);
-			
+		
+		Animation fallout = AnimationUtils.loadAnimation(main, R.anim.chicken_place);
+		chickenViewLeft.startAnimation(fallout);
+		Animation fallout2 = AnimationUtils.loadAnimation(main, R.anim.chicken_place);
+		fallout2.setDuration(2250);
+		chickenViewCenter.startAnimation(fallout2);
+		Animation fallout3 = AnimationUtils.loadAnimation(main, R.anim.chicken_place);
+		fallout3.setDuration(2500);
+		chickenViewRight.startAnimation(fallout3);
 		//---- Initialize broken eggs ----//
 		//needs to create a function to make the code better and shorter!!
 		

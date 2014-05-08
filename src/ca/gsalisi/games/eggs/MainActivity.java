@@ -1,7 +1,5 @@
 package ca.gsalisi.games.eggs;
 
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
@@ -10,21 +8,11 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
@@ -94,9 +82,9 @@ public class MainActivity extends Activity {
 	}
 
 
-	//cancel timers when the window is closed or when 
-	//back button or home button is pressed to prevent
-	//eggs falling even when out of game
+	/*cancel timers when the window is closed-- when 
+	**back button or home button is pressed to prevent
+	**eggs falling even when out of game*/
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -184,9 +172,5 @@ public class MainActivity extends Activity {
 	protected void updateBest() {
 		bestScoreView.setText("Best: " + bestScore);
 	}
-
-
-
-	
 
 }

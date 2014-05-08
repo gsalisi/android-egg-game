@@ -2,12 +2,12 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
    android:interpolator="@android:anim/linear_interpolator">
    <rotate
-       android:fromDegrees="0"
-       android:toDegrees="8"
+       android:fromDegrees="-5"
+       android:toDegrees="5"
        android:pivotX="50%"
-       android:pivotY="50%"
+       android:pivotY="70%"
        android:duration="70"
        android:startOffset="0"
-       android:repeatCount="3"
+       android:repeatCount="2"
        android:repeatMode="reverse" />
 </set>
